@@ -1,0 +1,158 @@
+\documentclass[10pt,aspectratio=169,fontset=none]{ctexbeamer}
+\usetheme{Madrid}
+\usecolortheme{seahorse}
+\setCJKmainfont[Path=/Users/liyufeng/Library/Fonts/]{STHeiti-Alias.ttf}
+\setCJKsansfont[Path=/Users/liyufeng/Library/Fonts/]{STHeiti-Alias.ttf}
+\setCJKmonofont[Path=/Users/liyufeng/Library/Fonts/]{STHeiti-Alias.ttf}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\setbeamertemplate{navigation symbols}{}
+\definecolor{acc}{HTML}{2A6FB0}
+\definecolor{warn}{HTML}{C77D1E}
+\setbeamercolor{frametitle}{bg=acc,fg=white}
+
+\title{Schrödinger Bridge $\times$ RL $\times$ 机器人策略学习}
+\subtitle{awesome\_study 全库综述：32 篇精读 + 2026 趋势雷达}
+\author{awesome\_study}
+\date{2026-09}
+
+\begin{document}
+\maketitle
+
+\begin{frame}{主线问题：生成式策略的 $\log\pi$ 障碍}
+\begin{columns}[T]
+\column{0.48\textwidth}
+\textbf{为什么生成式策略}
+\begin{itemize}
+  \item 机器人动作天然多模态，高斯 actor 把模式平均成无效动作
+  \item Diffusion Policy（RSS 2023）：action chunk 条件去噪，12 任务平均 +46.9\%
+  \item $\pi_0$ / RDT-1B 等 VLA 沿用 diffusion/flow 动作头
+\end{itemize}
+\column{0.48\textwidth}
+\textbf{为什么 RL 卡住}
+\begin{itemize}
+  \item 策略梯度、SAC 熵项、PPO ratio 全要 $\log\pi(a|s)$
+  \item 生成式策略动作是 SDE 终端边际：似然只有 ELBO 或需解 ODE
+  \item 表达力与可优化性的结构性冲突
+\end{itemize}
+\end{columns}
+\vspace{6pt}
+\textbf{四条解法路线（2026 全部成型）}：逐步分解（DPPO/DMPO）· 路径空间（FLAC/GSB-MDPO）· 噪声空间（DSRL/LP-DS）· 条件化监督（RECAP/AWR）
+\end{frame}
+
+\begin{frame}{仓库地图：六类 32 篇}
+\small
+\begin{tabular}{@{}p{0.24\textwidth}p{0.70\textwidth}@{}}
+\toprule
+\textbf{类别} & \textbf{篇目与定位} \\
+\midrule
+01 生成模型基础 (6) & DDPM · Score-SDE · FM · OT-CFM · MeanFlow · Diffusion Policy —— score $\to$ velocity $\to$ 平均速度场的一步化路线 \\
+02 SB 理论 (4) & Léonard · DSB · GSBM · SB Foundations —— 数学正典 $\to$ 神经化 $\to$ 广义化 $\to$ 教科书 \\
+03 Bridge 算法 (5) & I$^2$SB · DSBM · SF$^2$M · SB Flow · ASBM —— IPF $\to$ IMF $\to$ 免仿真 $\to$ 在线化 $\to$ 对抗少步 \\
+04 RL 基础 (5) & PPO · SAC · MDPO · GRPO · AWR —— SB$\times$RL 的接口层 \\
+05 生成式策略 $\times$ RL (8) & DT · Diffuser · Diffusion-QL · DPPO · MP1 · DMPO · OFP · DBPO —— 到原生一步竞赛 \\
+06 SB $\times$ RL 前沿 (4) & \textbf{FLAC · GSB-MDPO · RSBM · BDGxRL —— 选题主战场} \\
+\bottomrule
+\end{tabular}
+\vspace{4pt}
+
+每篇配中文详细解读；12 篇前沿另配保版式中译 PDF。
+\end{frame}
+
+\begin{frame}{线索一：一步化的终局}
+\textbf{步数演化}：DDPM(1000) $\to$ DDIM/FM(10--50) $\to$ OT-CFM(5--10) $\to$ 蒸馏/Consistency(1--2，需教师) $\to$ \textbf{MeanFlow 原生 1-NFE（免蒸馏）}
+\vspace{4pt}
+
+\textbf{关键机制}：学区间平均速度 $u(z_t,r,t)=\frac{1}{t-r}\int_r^t v\,d\tau$，恒等式
+$u = v-(t-r)\tfrac{d}{dt}u$ 给出免教师回归目标；ImageNet 256 一步 FID 3.43。
+\vspace{4pt}
+
+\textbf{进入机器人（半年五连发）}：MP1（1-NFE 操纵，6.8ms）$\to$ DMPO（+PPO，$>$120Hz 真机）$\to$ OFP（免 JVP 自蒸馏，一步超 $\pi_{0.5}$ 十步）$\to$ DBPO（drift 固定点，105.2Hz 双臂）
+\vspace{4pt}
+
+\alert{判断：「多步 vs 一步」争论已结束；SB 必须卖一步化没有的东西。}
+\end{frame}
+
+\begin{frame}{线索二：路径空间——SB 给 RL 的两个恒等式}
+\textbf{Girsanov 动能恒等式}
+\[
+\mathrm{KL}(\mathbb{P}^u\,\|\,\mathbb{Q}) = \mathbb{E}\Big[\int_0^1 \tfrac{1}{2\sigma^2}\|u\|^2\,dt\Big]
+\qquad\text{路径 KL = 漂移动能，不算任何密度}
+\]
+FLAC：SAC 的策略熵 $\to$ 动能预算 + 拉格朗日自动调节（免似然 max-ent RL）。
+\vspace{4pt}
+
+\textbf{数据处理不等式}
+\[
+\mathrm{KL}(\mathbb{P}\,\|\,\mathbb{Q}) \ge \mathrm{KL}(\mathbb{P}_1\,\|\,\mathbb{Q}_1)
+\qquad\text{压路径就压住了执行动作分布}
+\]
+GSB-MDPO：MDPO 邻近项搬进路径空间，drift-MSE 即路径 KL 的离散形式。
+\vspace{4pt}
+
+\alert{格局：理论位已被占满；两篇全是 locomotion 仿真——操纵/视觉/真机全空。MFPO（ICML 2026）走似然近似路线正面叫板。}
+\end{frame}
+
+\begin{frame}{线索三：桥式先验——informative source 的红利}
+\begin{itemize}
+  \item \textbf{图像（I$^2$SB）}：退化图当边界而非条件，修复 4 任务全胜，NFE 几百 $\to$ 约 20。起点带信息 $\to$ 路径短 $\to$ 少步稳。
+  \item \textbf{导航（RSBM）}：学习先验 + $\epsilon$ 旋钮（布朗桥 $\leftrightarrow$ OT 连续换挡），3 步 92\% 成功率免蒸馏。$\epsilon$ 谱系 = SB 独有的 coverage--straightness 权衡。
+  \item \textbf{操纵（BridgePolicy, ICML 2026）}：观测嵌入 SDE 从观测先验起步，52 仿真 + 5 真机任务胜 DP/DP3/FlowPolicy——顶会正面验证桥式起点（但只做了 BC 半场）。
+  \item \textbf{跨域（BDGxRL)}：DSB 在线翻译源域转移 + 奖励调制，MuJoCo 跨域全胜 DARC 系；像素级 sim-to-real SB 至今无人做。
+\end{itemize}
+\end{frame}
+
+\begin{frame}{主战场：SB$\times$RL 四条进路对照}
+\footnotesize
+\begin{tabular}{@{}p{0.15\textwidth}p{0.19\textwidth}p{0.19\textwidth}p{0.19\textwidth}p{0.19\textwidth}@{}}
+\toprule
+ & \textbf{FLAC} & \textbf{GSB-MDPO} & \textbf{RSBM} & \textbf{BDGxRL} \\
+\midrule
+问题定义 & max-ent = 对高熵参考的 GSB & 邻近更新进路径测度 & few-step 桥矫正 & 动力学差距 = unpaired 翻译 \\
+$\log\pi$ 处理 & 动能上界终端 KL & path-KL 作邻近项 & 不涉及（纯监督） & 不涉及（翻译后 SAC） \\
+实验面 & DMC + HumanoidBench & 14 个 MuJoCo 任务 & 导航 3 步 92\% & MuJoCo 跨域 \\
+最大短板 & 无操纵/真机 & 路径比率高方差 & 无 RL & 低维状态 \\
+启示 & informative reference 增量 & 装进操纵 = 占两格 & $\epsilon$ 谱是核心资产 & 像素级窗口开着 \\
+\bottomrule
+\end{tabular}
+\end{frame}
+
+\begin{frame}{2026 雷达（2--8 月，10 篇）}
+\textbf{一步族扩张}：MVP（2602.13810，边界约束）· MF-VLA（2603.01469）· ReactVLA（2606.14255）· \alert{MFPO（2604.14698, ICML：MeanFlow+max-ent，FLAC 正面对手）} · UCA-Flow（2608.16153，+9.3pp）
+\vspace{6pt}
+
+\textbf{RL 微调路线}：$\pi^*_{0.6}$/RECAP（2511.14759：优势条件化免策略梯度，真实任务吞吐翻倍）· LP-DS（2606.01151, ICML：DSRL 修正 + \textbf{首个动作熵多模态评测}）· DF-ExpEnse（2606.19656）· BridgePolicy（2512.07212, ICML）
+\vspace{6pt}
+
+\textbf{五条趋势}：一步化范式化 · $\log\pi$ 四路线互相对表（path-space 独缺真机）· informative source 上主会但只做 BC · mode coverage 从口号走向指标 · 工业界与学术界在「绕开似然」上合流
+\end{frame}
+
+\begin{frame}{空白与机会：五个无人占位的格子}
+\small
+\begin{tabular}{@{}clp{0.42\textwidth}l@{}}
+\toprule
+\# & \textbf{组合} & \textbf{零件（全部已有文献）} & \textbf{窗口} \\
+\midrule
+1 & \alert{One-step SB policy} & MeanFlow 恒等式 $\times$ 桥边界 $\times$ $\epsilon$ 谱 & 6--12 月 \\
+2 & Few-step SB $\times$ path-RL & GSB-MDPO/FLAC 内核 $\times$ RSBM 骨架 $\times$ 操纵 & 12 月内 \\
+3 & Mode coverage 基准 & LP-DS 熵估计 $\times$ $\epsilon$ 谱做实验变量 & 先做先赢 \\
+4 & 像素级 sim-to-real SB & SB Flow 规模化 $\times$ BDGxRL 框架 & 竞争最少 \\
+5 & RL 加权耦合 & advantage 注入 IMF/OT-CFM 耦合 & 纯算法空格 \\
+\bottomrule
+\end{tabular}
+\vspace{6pt}
+
+\textbf{风险}：「SB 帽子」贬值加速；path-space 纯理论位已饱和；MeanFlow 族半年 6 篇——对表要指路线而非单篇。
+\end{frame}
+
+\begin{frame}{结论}
+SB$\times$RL 不是成熟工具，是有清晰 niche 的研究空间。一步化与 path-space 的理论位在 2026 上半年被迅速占领，但三个交叉格子——\textbf{one-step SB policy、few-step$\times$path-space 的操纵落地、像素级 sim-to-real 桥}——每个零件都有文献而组合无人做。
+\vspace{6pt}
+
+SB 的持久差异化资产只有两个：\textbf{informative source（边界即条件）}与 \textbf{$\epsilon$ 谱系（coverage--straightness 同旋钮）}；不落在这两点上的 SB 包装工作都会贬值。
+\vspace{10pt}
+
+\textbf{产物}：32 篇中文详细解读 · 英文 PDF 32 篇 + 保版式中译 · 趋势报告（10 篇新雷达）· HTML PPT + 本 PDF。
+\end{frame}
+
+\end{document}

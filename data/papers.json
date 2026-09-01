@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "source": "Distilled from the study/ knowledge base (SB x RL Study Base), 2026-09-01",
+    "translate_policy": "12 frontier/bridge papers get layout-preserving zh translation via SuperTranslate; classics keep EN only (abundant zh resources exist)"
+  },
+  "categories": {
+    "01_generative_foundations": "生成模型基础（score / velocity / one-step）",
+    "02_sb_theory": "Schrödinger Bridge 理论",
+    "03_bridge_algorithms": "Bridge 算法（DSB 之后）",
+    "04_rl_foundations": "强化学习基础",
+    "05_generative_rl": "生成式策略 × RL",
+    "06_sb_x_rl": "SB × RL 交叉前沿（选题主战场）"
+  },
+  "papers": [
+    {"id": "2006.11239", "slug": "ddpm", "title": "Denoising Diffusion Probabilistic Models", "authors": "Ho, Jain, Abbeel", "venue": "NeurIPS 2020", "category": "01_generative_foundations", "translate": false, "role": "扩散模型开山：forward 加噪 + reverse 去噪 + ε-prediction"},
+    {"id": "2011.13456", "slug": "score_sde", "title": "Score-Based Generative Modeling through Stochastic Differential Equations", "authors": "Song et al.", "venue": "ICLR 2021 (Oral)", "category": "01_generative_foundations", "translate": false, "role": "连续时间统一框架：forward SDE / reverse SDE / PF-ODE"},
+    {"id": "2210.02747", "slug": "flow_matching", "title": "Flow Matching for Generative Modeling", "authors": "Lipman et al.", "venue": "ICLR 2023", "category": "01_generative_foundations", "translate": false, "role": "velocity matching 范式：把生成变成从 0 到 1 的确定性传输"},
+    {"id": "2302.00482", "slug": "ot_cfm", "title": "Improving and Generalizing Flow-Based Generative Models with Minibatch Optimal Transport", "authors": "Tong et al.", "venue": "TMLR 2024", "category": "01_generative_foundations", "translate": false, "role": "OT-CFM：OT coupling 拉直轨迹，few-step 的前置"},
+    {"id": "2505.13447", "slug": "meanflow", "title": "Mean Flows for One-step Generative Modeling", "authors": "Geng et al.", "venue": "arXiv 2025", "category": "01_generative_foundations", "translate": true, "role": "平均速度场恒等式 → 原生 1-NFE；MP1/DMPO/OFP 的共同基石"},
+    {"id": "2303.04137", "slug": "diffusion_policy", "title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion", "authors": "Chi et al.", "venue": "RSS 2023 / IJRR", "category": "01_generative_foundations", "translate": false, "role": "action chunk 上做扩散去噪，机器人操纵的事实标准"},
+    {"id": "1308.0215", "slug": "leonard_survey", "title": "A Survey of the Schrödinger Problem and Some of Its Connections with Optimal Transport", "authors": "Léonard", "venue": "DCDS 2014", "category": "02_sb_theory", "translate": false, "role": "SB 数学正典：path-space KL 投影视角与 OT 联系"},
+    {"id": "2106.01357", "slug": "dsb", "title": "Diffusion Schrödinger Bridge with Applications to Score-Based Generative Modeling", "authors": "De Bortoli et al.", "venue": "NeurIPS 2021", "category": "02_sb_theory", "translate": true, "role": "第一个 neural SB（neural IPF），bridge 算法系的起点"},
+    {"id": "2310.02233", "slug": "gsbm", "title": "Generalized Schrödinger Bridge Matching", "authors": "Liu et al.", "venue": "ICLR 2024", "category": "02_sb_theory", "translate": true, "role": "GSB：边界约束 + 路径 cost，通往 RL 的理论接口"},
+    {"id": "2603.18992", "slug": "sb_foundations", "title": "Foundations of Schrödinger Bridges for Generative Modeling", "authors": "", "venue": "arXiv 2026", "category": "02_sb_theory", "translate": false, "role": "面向生成建模的系统性综述（2026）"},
+    {"id": "2302.05872", "slug": "i2sb", "title": "I2SB: Image-to-Image Schrödinger Bridge", "authors": "Liu et al.", "venue": "ICML 2023", "category": "03_bridge_algorithms", "translate": true, "role": "informative source：把退化图像当 boundary 而非 condition"},
+    {"id": "2303.16852", "slug": "dsbm", "title": "Diffusion Schrödinger Bridge Matching", "authors": "Shi et al.", "venue": "NeurIPS 2023", "category": "03_bridge_algorithms", "translate": true, "role": "IMF：交替 Markovian 投影，修复 DSB 的 path-space 漂移"},
+    {"id": "2307.03672", "slug": "sf2m", "title": "Simulation-Free Schrödinger Bridges via Score and Flow Matching", "authors": "Tong et al.", "venue": "AISTATS 2024", "category": "03_bridge_algorithms", "translate": false, "role": "免仿真 SDE rollout：SB 变成两个 loss 的回归问题"},
+    {"id": "2409.09347", "slug": "sb_flow", "title": "Schrödinger Bridge Flow for Unpaired Data Translation", "authors": "De Bortoli et al. (DeepMind)", "venue": "NeurIPS 2024", "category": "03_bridge_algorithms", "translate": true, "role": "α-IMF 在线更新：单网络免重训迭代，规模化最成熟"},
+    {"id": "2405.14449", "slug": "adv_sbm", "title": "Adversarial Schrödinger Bridge Matching", "authors": "Gushchin et al.", "venue": "NeurIPS 2024", "category": "03_bridge_algorithms", "translate": false, "role": "对抗式 D-IMF：SB 采样降到 ~4-5 NFE"},
+    {"id": "1707.06347", "slug": "ppo", "title": "Proximal Policy Optimization Algorithms", "authors": "Schulman et al.", "venue": "arXiv 2017", "category": "04_rl_foundations", "translate": false, "role": "clip = trust region 的工程化，on-policy 的事实标准"},
+    {"id": "1801.01290", "slug": "sac", "title": "Soft Actor-Critic: Off-Policy Maximum Entropy Deep RL with a Stochastic Actor", "authors": "Haarnoja et al.", "venue": "ICML 2018", "category": "04_rl_foundations", "translate": false, "role": "max-ent RL：最优策略是 energy-based → SB 熵正则的近亲"},
+    {"id": "2005.09814", "slug": "mdpo", "title": "Mirror Descent Policy Optimization", "authors": "Tomar et al.", "venue": "ICLR 2022", "category": "04_rl_foundations", "translate": false, "role": "KL 邻近点迭代视角，GSB-MDPO 的直接前驱"},
+    {"id": "2402.03300", "slug": "grpo", "title": "DeepSeekMath: Pushing the Limits of Mathematical Reasoning (GRPO)", "authors": "Shao et al.", "venue": "arXiv 2024", "category": "04_rl_foundations", "translate": false, "role": "group-relative advantage 免 critic，R1-style VLA RL 的源头"},
+    {"id": "1910.00177", "slug": "awr", "title": "Advantage-Weighted Regression: Simple and Scalable Off-Policy RL", "authors": "Peng et al.", "venue": "arXiv 2019", "category": "04_rl_foundations", "translate": false, "role": "advantage-weighted BC：offline 策略提取绕开 log π 的钥匙"},
+    {"id": "2106.01345", "slug": "decision_transformer", "title": "Decision Transformer: Reinforcement Learning via Sequence Modeling", "authors": "Chen et al.", "venue": "NeurIPS 2021", "category": "05_generative_rl", "translate": false, "role": "路线 A 起点：trajectory 当 sequence，RL 变条件生成"},
+    {"id": "2205.09991", "slug": "diffuser", "title": "Planning with Diffusion for Flexible Behavior Synthesis", "authors": "Janner et al.", "venue": "ICML 2022", "category": "05_generative_rl", "translate": false, "role": "路线 B 起点：把 planning 整体变成 diffusion + guidance"},
+    {"id": "2208.06193", "slug": "diffusion_ql", "title": "Diffusion Policies as an Expressive Policy Class for Offline RL", "authors": "Wang et al.", "venue": "ICLR 2023", "category": "05_generative_rl", "translate": false, "role": "diffusion 进 offline RL 的标杆：Q + BC 双项"},
+    {"id": "2409.00588", "slug": "dppo", "title": "Diffusion Policy Policy Optimization", "authors": "Ren et al.", "venue": "ICLR 2025", "category": "05_generative_rl", "translate": false, "role": "denoising-as-MDP：对去噪链上的 action 做 PPO，在线微调标杆"},
+    {"id": "2507.10543", "slug": "mp1", "title": "MP1: MeanFlow Tames Policy Learning in 1-step for Robotic Manipulation", "authors": "", "venue": "arXiv 2025", "category": "05_generative_rl", "translate": false, "role": "MeanFlow 进机器人：1-NFE 策略生成 + Dispersive Loss"},
+    {"id": "2601.20701", "slug": "dmpo", "title": "DMPO: Dispersive MeanFlow Policy Optimization", "authors": "", "venue": "arXiv 2026", "category": "05_generative_rl", "translate": true, "role": "dispersive 表征正则 + PPO 微调，>120 Hz Franka 实机"},
+    {"id": "2603.12480", "slug": "ofp", "title": "One-step Flow Policy (self-distillation from scratch)", "authors": "", "venue": "arXiv 2026", "category": "05_generative_rl", "translate": true, "role": "从零自蒸馏免教师，训练时间约 0.5 倍"},
+    {"id": "2604.03540", "slug": "dbpo", "title": "DBPO: Drift-Based Policy Optimization (v2)", "authors": "", "venue": "arXiv 2026", "category": "05_generative_rl", "translate": false, "role": "native one-step + online RL，105.2 Hz 控制频率"},
+    {"id": "2602.12829", "slug": "flac", "title": "FLAC: Max-Entropy RL via Kinetic Energy Regularized Bridge Matching", "authors": "ByteDance & Tsinghua", "venue": "arXiv 2026", "category": "06_sb_x_rl", "translate": true, "role": "把 SAC max-ent 的策略熵换成动能正则 GSB，绕开生成式 log π"},
+    {"id": "2603.21621", "slug": "gsb_mdpo", "title": "GSB-MDPO: Path-Space Mirror Descent under the Generalized Schrödinger Bridge", "authors": "", "venue": "arXiv 2026", "category": "06_sb_x_rl", "translate": true, "role": "path-KL 替代动作 KL：proximal 更新搬进 path space，免 log π"},
+    {"id": "2604.05673", "slug": "rsbm", "title": "Rectified Schrödinger Bridge Matching for Few-Step Visual Navigation", "authors": "", "venue": "arXiv 2026", "category": "06_sb_x_rl", "translate": true, "role": "bridge 上做 rectification：3 步导航，few-step SB 策略实证"},
+    {"id": "2602.23737", "slug": "bdg", "title": "Bridging Dynamics Gaps via Diffusion Schrödinger Bridge for Cross-Domain RL", "authors": "", "venue": "arXiv 2026", "category": "06_sb_x_rl", "translate": true, "role": "sim-to-real 动力学差距：SB 做 unpaired 轨迹翻译"}
+  ]
+}

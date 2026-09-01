@@ -1,0 +1,6 @@
+.DS_Store
+nohup.out
+translate.log
+*.tmp
+__pycache__/
+*.inspect.json
