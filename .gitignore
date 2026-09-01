@@ -4,3 +4,4 @@ translate.log
 *.tmp
 __pycache__/
 *.inspect.json
+*.translation-cache.jsonl
