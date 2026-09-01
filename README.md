@@ -1,6 +1,6 @@
 # Awesome Study: Schrödinger Bridge × RL × Robot Policy Learning
 
-![papers](https://img.shields.io/badge/papers-32-blue) ![zh--pdf](https://img.shields.io/badge/%E4%B8%AD%E6%96%87PDF-1-red) ![license](https://img.shields.io/badge/license-MIT-green)
+![papers](https://img.shields.io/badge/papers-32-blue) ![zh--pdf](https://img.shields.io/badge/%E4%B8%AD%E6%96%87PDF-12-red) ![license](https://img.shields.io/badge/license-MIT-green)
 
 围绕 **Schrödinger Bridge（SB）× 强化学习（RL）× 机器人策略学习** 的精读仓库。
 每篇论文配：中文详细解读（`papers/*/README.md`）、英文原版 PDF；12 篇前沿论文另配保版式中文翻译 PDF（[SuperTranslate](https://github.com/asimfish/super_translate) 生成）。
@@ -31,7 +31,7 @@
 | Score-Based Generative Modeling through Stochastic Differential Equations | Song et al. | ICLR 2021 (Oral) | 连续时间统一框架：forward SDE / reverse SDE / PF-ODE | [arXiv](https://arxiv.org/abs/2011.13456) · [解读](papers/2011.13456_score_sde/README.md) · [EN](papers/2011.13456_score_sde/2011.13456.pdf) |
 | Flow Matching for Generative Modeling | Lipman et al. | ICLR 2023 | velocity matching 范式：把生成变成从 0 到 1 的确定性传输 | [arXiv](https://arxiv.org/abs/2210.02747) · [解读](papers/2210.02747_flow_matching/README.md) · [EN](papers/2210.02747_flow_matching/2210.02747.pdf) |
 | Improving and Generalizing Flow-Based Generative Models with Minibatch Optimal Transport | Tong et al. | TMLR 2024 | OT-CFM：OT coupling 拉直轨迹，few-step 的前置 | [arXiv](https://arxiv.org/abs/2302.00482) · [解读](papers/2302.00482_ot_cfm/README.md) · [EN](papers/2302.00482_ot_cfm/2302.00482.pdf) |
-| Mean Flows for One-step Generative Modeling | Geng et al. | arXiv 2025 | 平均速度场恒等式 → 原生 1-NFE；MP1/DMPO/OFP 的共同基石 | [arXiv](https://arxiv.org/abs/2505.13447) · [解读](papers/2505.13447_meanflow/README.md) · [EN](papers/2505.13447_meanflow/2505.13447.pdf) |
+| Mean Flows for One-step Generative Modeling | Geng et al. | arXiv 2025 | 平均速度场恒等式 → 原生 1-NFE；MP1/DMPO/OFP 的共同基石 | [arXiv](https://arxiv.org/abs/2505.13447) · [解读](papers/2505.13447_meanflow/README.md) · [EN](papers/2505.13447_meanflow/2505.13447.pdf) · [中文](papers/2505.13447_meanflow/2505.13447.zh.pdf) |
 | Diffusion Policy: Visuomotor Policy Learning via Action Diffusion | Chi et al. | RSS 2023 / IJRR | action chunk 上做扩散去噪，机器人操纵的事实标准 | [arXiv](https://arxiv.org/abs/2303.04137) · [解读](papers/2303.04137_diffusion_policy/README.md) · [EN](papers/2303.04137_diffusion_policy/2303.04137.pdf) |
 
 ## Schrödinger Bridge 理论
@@ -41,8 +41,8 @@ Schrödinger Bridge 的数学正典与神经化起点：path-space KL、IPF、GS
 | 论文 | 作者 | 发表 | 定位 | 链接 |
 |---|---|---|---|---|
 | A Survey of the Schrödinger Problem and Some of Its Connections with Optimal Transport | Léonard | DCDS 2014 | SB 数学正典：path-space KL 投影视角与 OT 联系 | [arXiv](https://arxiv.org/abs/1308.0215) · [解读](papers/1308.0215_leonard_survey/README.md) · [EN](papers/1308.0215_leonard_survey/1308.0215.pdf) |
-| Diffusion Schrödinger Bridge with Applications to Score-Based Generative Modeling | De Bortoli et al. | NeurIPS 2021 | 第一个 neural SB（neural IPF），bridge 算法系的起点 | [arXiv](https://arxiv.org/abs/2106.01357) · [解读](papers/2106.01357_dsb/README.md) · [EN](papers/2106.01357_dsb/2106.01357.pdf) |
-| Generalized Schrödinger Bridge Matching | Liu et al. | ICLR 2024 | GSB：边界约束 + 路径 cost，通往 RL 的理论接口 | [arXiv](https://arxiv.org/abs/2310.02233) · [解读](papers/2310.02233_gsbm/README.md) · [EN](papers/2310.02233_gsbm/2310.02233.pdf) |
+| Diffusion Schrödinger Bridge with Applications to Score-Based Generative Modeling | De Bortoli et al. | NeurIPS 2021 | 第一个 neural SB（neural IPF），bridge 算法系的起点 | [arXiv](https://arxiv.org/abs/2106.01357) · [解读](papers/2106.01357_dsb/README.md) · [EN](papers/2106.01357_dsb/2106.01357.pdf) · [中文](papers/2106.01357_dsb/2106.01357.zh.pdf) |
+| Generalized Schrödinger Bridge Matching | Liu et al. | ICLR 2024 | GSB：边界约束 + 路径 cost，通往 RL 的理论接口 | [arXiv](https://arxiv.org/abs/2310.02233) · [解读](papers/2310.02233_gsbm/README.md) · [EN](papers/2310.02233_gsbm/2310.02233.pdf) · [中文](papers/2310.02233_gsbm/2310.02233.zh.pdf) |
 | Foundations of Schrödinger Bridges for Generative Modeling | — | arXiv 2026 | 面向生成建模的系统性综述（2026） | [arXiv](https://arxiv.org/abs/2603.18992) · [解读](papers/2603.18992_sb_foundations/README.md) · [EN](papers/2603.18992_sb_foundations/2603.18992.pdf) |
 
 ## Bridge 算法（DSB 之后）
@@ -51,10 +51,10 @@ DSB 之后的算法演化主线：IPF → IMF → 免仿真 → 在线 α-IMF �
 
 | 论文 | 作者 | 发表 | 定位 | 链接 |
 |---|---|---|---|---|
-| I2SB: Image-to-Image Schrödinger Bridge | Liu et al. | ICML 2023 | informative source：把退化图像当 boundary 而非 condition | [arXiv](https://arxiv.org/abs/2302.05872) · [解读](papers/2302.05872_i2sb/README.md) · [EN](papers/2302.05872_i2sb/2302.05872.pdf) |
-| Diffusion Schrödinger Bridge Matching | Shi et al. | NeurIPS 2023 | IMF：交替 Markovian 投影，修复 DSB 的 path-space 漂移 | [arXiv](https://arxiv.org/abs/2303.16852) · [解读](papers/2303.16852_dsbm/README.md) · [EN](papers/2303.16852_dsbm/2303.16852.pdf) |
+| I2SB: Image-to-Image Schrödinger Bridge | Liu et al. | ICML 2023 | informative source：把退化图像当 boundary 而非 condition | [arXiv](https://arxiv.org/abs/2302.05872) · [解读](papers/2302.05872_i2sb/README.md) · [EN](papers/2302.05872_i2sb/2302.05872.pdf) · [中文](papers/2302.05872_i2sb/2302.05872.zh.pdf) |
+| Diffusion Schrödinger Bridge Matching | Shi et al. | NeurIPS 2023 | IMF：交替 Markovian 投影，修复 DSB 的 path-space 漂移 | [arXiv](https://arxiv.org/abs/2303.16852) · [解读](papers/2303.16852_dsbm/README.md) · [EN](papers/2303.16852_dsbm/2303.16852.pdf) · [中文](papers/2303.16852_dsbm/2303.16852.zh.pdf) |
 | Simulation-Free Schrödinger Bridges via Score and Flow Matching | Tong et al. | AISTATS 2024 | 免仿真 SDE rollout：SB 变成两个 loss 的回归问题 | [arXiv](https://arxiv.org/abs/2307.03672) · [解读](papers/2307.03672_sf2m/README.md) · [EN](papers/2307.03672_sf2m/2307.03672.pdf) |
-| Schrödinger Bridge Flow for Unpaired Data Translation | De Bortoli et al. (DeepMind) | NeurIPS 2024 | α-IMF 在线更新：单网络免重训迭代，规模化最成熟 | [arXiv](https://arxiv.org/abs/2409.09347) · [解读](papers/2409.09347_sb_flow/README.md) · [EN](papers/2409.09347_sb_flow/2409.09347.pdf) |
+| Schrödinger Bridge Flow for Unpaired Data Translation | De Bortoli et al. (DeepMind) | NeurIPS 2024 | α-IMF 在线更新：单网络免重训迭代，规模化最成熟 | [arXiv](https://arxiv.org/abs/2409.09347) · [解读](papers/2409.09347_sb_flow/README.md) · [EN](papers/2409.09347_sb_flow/2409.09347.pdf) · [中文](papers/2409.09347_sb_flow/2409.09347.zh.pdf) |
 | Adversarial Schrödinger Bridge Matching | Gushchin et al. | NeurIPS 2024 | 对抗式 D-IMF：SB 采样降到 ~4-5 NFE | [arXiv](https://arxiv.org/abs/2405.14449) · [解读](papers/2405.14449_adv_sbm/README.md) · [EN](papers/2405.14449_adv_sbm/2405.14449.pdf) |
 
 ## 强化学习基础
@@ -80,8 +80,8 @@ DSB 之后的算法演化主线：IPF → IMF → 免仿真 → 在线 α-IMF �
 | Diffusion Policies as an Expressive Policy Class for Offline RL | Wang et al. | ICLR 2023 | diffusion 进 offline RL 的标杆：Q + BC 双项 | [arXiv](https://arxiv.org/abs/2208.06193) · [解读](papers/2208.06193_diffusion_ql/README.md) · [EN](papers/2208.06193_diffusion_ql/2208.06193.pdf) |
 | Diffusion Policy Policy Optimization | Ren et al. | ICLR 2025 | denoising-as-MDP：对去噪链上的 action 做 PPO，在线微调标杆 | [arXiv](https://arxiv.org/abs/2409.00588) · [解读](papers/2409.00588_dppo/README.md) · [EN](papers/2409.00588_dppo/2409.00588.pdf) |
 | MP1: MeanFlow Tames Policy Learning in 1-step for Robotic Manipulation | — | arXiv 2025 | MeanFlow 进机器人：1-NFE 策略生成 + Dispersive Loss | [arXiv](https://arxiv.org/abs/2507.10543) · [解读](papers/2507.10543_mp1/README.md) · [EN](papers/2507.10543_mp1/2507.10543.pdf) |
-| DMPO: Dispersive MeanFlow Policy Optimization | — | arXiv 2026 | dispersive 表征正则 + PPO 微调，>120 Hz Franka 实机 | [arXiv](https://arxiv.org/abs/2601.20701) · [解读](papers/2601.20701_dmpo/README.md) · [EN](papers/2601.20701_dmpo/2601.20701.pdf) |
-| One-step Flow Policy (self-distillation from scratch) | — | arXiv 2026 | 从零自蒸馏免教师，训练时间约 0.5 倍 | [arXiv](https://arxiv.org/abs/2603.12480) · [解读](papers/2603.12480_ofp/README.md) · [EN](papers/2603.12480_ofp/2603.12480.pdf) |
+| DMPO: Dispersive MeanFlow Policy Optimization | — | arXiv 2026 | dispersive 表征正则 + PPO 微调，>120 Hz Franka 实机 | [arXiv](https://arxiv.org/abs/2601.20701) · [解读](papers/2601.20701_dmpo/README.md) · [EN](papers/2601.20701_dmpo/2601.20701.pdf) · [中文](papers/2601.20701_dmpo/2601.20701.zh.pdf) |
+| One-step Flow Policy (self-distillation from scratch) | — | arXiv 2026 | 从零自蒸馏免教师，训练时间约 0.5 倍 | [arXiv](https://arxiv.org/abs/2603.12480) · [解读](papers/2603.12480_ofp/README.md) · [EN](papers/2603.12480_ofp/2603.12480.pdf) · [中文](papers/2603.12480_ofp/2603.12480.zh.pdf) |
 | DBPO: Drift-Based Policy Optimization (v2) | — | arXiv 2026 | native one-step + online RL，105.2 Hz 控制频率 | [arXiv](https://arxiv.org/abs/2604.03540) · [解读](papers/2604.03540_dbpo/README.md) · [EN](papers/2604.03540_dbpo/2604.03540.pdf) |
 
 ## SB × RL 交叉前沿（选题主战场）
@@ -90,10 +90,10 @@ DSB 之后的算法演化主线：IPF → IMF → 免仿真 → 在线 α-IMF �
 
 | 论文 | 作者 | 发表 | 定位 | 链接 |
 |---|---|---|---|---|
-| FLAC: Max-Entropy RL via Kinetic Energy Regularized Bridge Matching | ByteDance & Tsinghua | arXiv 2026 | 把 SAC max-ent 的策略熵换成动能正则 GSB，绕开生成式 log π | [arXiv](https://arxiv.org/abs/2602.12829) · [解读](papers/2602.12829_flac/README.md) · [EN](papers/2602.12829_flac/2602.12829.pdf) |
+| FLAC: Max-Entropy RL via Kinetic Energy Regularized Bridge Matching | ByteDance & Tsinghua | arXiv 2026 | 把 SAC max-ent 的策略熵换成动能正则 GSB，绕开生成式 log π | [arXiv](https://arxiv.org/abs/2602.12829) · [解读](papers/2602.12829_flac/README.md) · [EN](papers/2602.12829_flac/2602.12829.pdf) · [中文](papers/2602.12829_flac/2602.12829.zh.pdf) |
 | GSB-MDPO: Path-Space Mirror Descent under the Generalized Schrödinger Bridge | — | arXiv 2026 | path-KL 替代动作 KL：proximal 更新搬进 path space，免 log π | [arXiv](https://arxiv.org/abs/2603.21621) · [解读](papers/2603.21621_gsb_mdpo/README.md) · [EN](papers/2603.21621_gsb_mdpo/2603.21621.pdf) · [中文](papers/2603.21621_gsb_mdpo/2603.21621.zh.pdf) |
-| Rectified Schrödinger Bridge Matching for Few-Step Visual Navigation | — | arXiv 2026 | bridge 上做 rectification：3 步导航，few-step SB 策略实证 | [arXiv](https://arxiv.org/abs/2604.05673) · [解读](papers/2604.05673_rsbm/README.md) · [EN](papers/2604.05673_rsbm/2604.05673.pdf) |
-| Bridging Dynamics Gaps via Diffusion Schrödinger Bridge for Cross-Domain RL | — | arXiv 2026 | sim-to-real 动力学差距：SB 做 unpaired 轨迹翻译 | [arXiv](https://arxiv.org/abs/2602.23737) · [解读](papers/2602.23737_bdg/README.md) · [EN](papers/2602.23737_bdg/2602.23737.pdf) |
+| Rectified Schrödinger Bridge Matching for Few-Step Visual Navigation | — | arXiv 2026 | bridge 上做 rectification：3 步导航，few-step SB 策略实证 | [arXiv](https://arxiv.org/abs/2604.05673) · [解读](papers/2604.05673_rsbm/README.md) · [EN](papers/2604.05673_rsbm/2604.05673.pdf) · [中文](papers/2604.05673_rsbm/2604.05673.zh.pdf) |
+| Bridging Dynamics Gaps via Diffusion Schrödinger Bridge for Cross-Domain RL | — | arXiv 2026 | sim-to-real 动力学差距：SB 做 unpaired 轨迹翻译 | [arXiv](https://arxiv.org/abs/2602.23737) · [解读](papers/2602.23737_bdg/README.md) · [EN](papers/2602.23737_bdg/2602.23737.pdf) · [中文](papers/2602.23737_bdg/2602.23737.zh.pdf) |
 
 ## 汇总报告
 
