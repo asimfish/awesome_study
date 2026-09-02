@@ -17,6 +17,7 @@ CAT_INTRO = {
     "04_rl_foundations": "为 SB×RL 提供 RL 侧接口的五篇经典：trust region、max-ent、mirror descent、免 critic、advantage-weighted BC。",
     "05_generative_rl": "生成式策略 × RL 的两代范式：序列建模/扩散规划 → offline Q+BC → online denoising-as-MDP → 一步策略实时控制。",
     "06_sb_x_rl": "选题主战场：四条 SB×RL 进路（动能正则、path-space mirror descent、bridge rectification、跨域轨迹翻译）。",
+    "07_radar_2026": "趋势报告收录的 2026 年新变量：MeanFlow 族扩张（MVP/MFPO/UCA-Flow/ReactVLA）、桥式起点上主会（BridgePolicy）、绕开似然的 RL 微调（RECAP/LP-DS/DF-ExpEnse）。",
 }
 
 def paper_row(p):
@@ -44,6 +45,8 @@ out.append("""围绕 **Schrödinger Bridge（SB）× 强化学习（RL）× 机�
 1. **一步化**（MeanFlow 系）：把多步去噪压成 1-NFE，让 RL 微调回到普通策略优化；
 2. **路径空间**（SB 系）：把 KL 正则从动作分布搬到轨迹测度，绕开 log π；
 3. **桥式先验**（I2SB 系）：用 informative source 替代高斯先验，天然适配 sim-to-real 与导航。
+
+绕开 `log π` 的五条实用路线在本库均有代表：逐步分解（DPPO/ReinFlow）· 路径空间（FLAC/GSB-MDPO）· 噪声空间（DSRL/LP-DS）· 条件化/加权监督（AWR/RECAP）· 生成-选择（MVP/DF-ExpEnse/FMQ）。
 """)
 out.append("## 目录\n")
 for cid, cname in m["categories"].items():

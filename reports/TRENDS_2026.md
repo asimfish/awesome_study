@@ -1,6 +1,8 @@
 # SB×RL 前沿趋势报告（2026-09）
 
-> 检索时间 2026-09-01；覆盖 2026 年 2-8 月 arXiv 与 ICML 2026 已发表工作。每条判断附证据指针。基础盘（本仓库 32 篇）不重复收录。
+> 检索时间 2026-09-01；覆盖 2026 年 2-8 月 arXiv 与 ICML 2026 已发表工作。每条判断附证据指针。
+>
+> **2026-09-02 更新**：本报告雷达中的 9 篇论文已全部正式入库为 [07 类](../README.md#2026-前沿雷达趋势报告收录的新变量)（每篇配详细解读），另补入 10 篇谱系前作（Rectified Flow、PRISM、Soft-SB、FQL、Consistency Policy、Flow-GRPO、ReinFlow、DSRL、OMP、FMQ）。仓库总量 32→51。下方雷达条目末尾追加了解读链接。
 
 ## TL;DR
 
@@ -14,22 +16,29 @@
 
 ### A. 一步/少步策略（MeanFlow 族扩张）
 
-- **MVP: Mean Flow Policy with Instantaneous Velocity Constraint**（[arXiv:2602.13810](https://arxiv.org/abs/2602.13810)，2026-02）——给平均速度场加瞬时速度边界约束（IVC），修 MeanFlow 缺边界条件的病；RoboMimic+OGBench SOTA。证据强度：中（仿真基准全面）。值得跟：是，IVC 是对 MeanFlow 恒等式的实质补丁。
-- **MF-VLA: Mean-Flow based One-Step VLA**（[arXiv:2603.01469](https://arxiv.org/abs/2603.01469)，2026-03）——MeanFlow 动作头进 VLA，真机比 SmolVLA 快 8.7 倍。证据强度：中弱（成功率仅「相当」）。值得跟：作为格局信号看。
-- **ReactVLA**（[arXiv:2606.14255](https://arxiv.org/abs/2606.14255)，2026-06）——改进版 MeanFlow（iMF）+ 注意力残差路由，LIBERO/真机延迟 <38.6 ms，胜 SmolVLA/π0。证据强度：中。值得跟：iMF 的改动值得读。
-- **UCA-Flow**（[arXiv:2608.16153](https://arxiv.org/abs/2608.16153)，2026-08）——条件与动作统一进单一 token 序列联合演化，一步生成，平均成功率超最强基线 9.3 pp，比 MP1 快 2.3 倍。证据强度：中强。值得跟：是，条件-动作联合建模可能是一步策略的下一个共识组件。
-- **MFPO: Mean Flow Policy Optimization**（[arXiv:2604.14698](https://arxiv.org/abs/2604.14698)，ICML 2026）——MeanFlow 策略进 max-ent RL：平均散度网络近似似然积分 + 自适应瞬时速度估计，MuJoCo/DMC/HumanoidBench 打平或超扩散基线、2 步采样、训练快 ~50%。证据强度：强（ICML + 开源）。**必须跟：与 FLAC 构成 likelihood-approx vs likelihood-free 的直接路线对决。**
+- **MVP: Mean Flow Policy with Instantaneous Velocity Constraint**（[arXiv:2602.13810](https://arxiv.org/abs/2602.13810)，ICLR 2026 Oral；[解读](../papers/2602.13810_mvp/README.md)）——给平均速度场加瞬时速度边界约束（IVC），修 MeanFlow 缺边界条件的病；RoboMimic+OGBench SOTA。证据强度：中（仿真基准全面）。值得跟：是，IVC 是对 MeanFlow 恒等式的实质补丁。
+- **MF-VLA: Mean-Flow based One-Step VLA**（[arXiv:2603.01469](https://arxiv.org/abs/2603.01469)，2026-03；[解读](../papers/2603.01469_mf_vla/README.md)）——MeanFlow 动作头进 VLA，真机比 SmolVLA 快 8.7 倍。证据强度：中弱（成功率仅「相当」）。值得跟：作为格局信号看。
+- **ReactVLA**（[arXiv:2606.14255](https://arxiv.org/abs/2606.14255)，2026-06；[解读](../papers/2606.14255_reactvla/README.md)）——改进版 MeanFlow（iMF）+ 注意力残差路由，LIBERO/真机延迟 <38.6 ms，胜 SmolVLA/π0。证据强度：中。值得跟：iMF 的改动值得读。
+- **UCA-Flow**（[arXiv:2608.16153](https://arxiv.org/abs/2608.16153)，2026-08；[解读](../papers/2608.16153_uca_flow/README.md)）——条件与动作统一进单一 token 序列联合演化，一步生成，平均成功率超最强基线 9.3 pp，比 MP1 快 2.3 倍。证据强度：中强。值得跟：是，条件-动作联合建模可能是一步策略的下一个共识组件。
+- **MFPO: Mean Flow Policy Optimization**（[arXiv:2604.14698](https://arxiv.org/abs/2604.14698)，ICML 2026；[解读](../papers/2604.14698_mfpo/README.md)）——MeanFlow 策略进 max-ent RL：平均散度网络近似似然积分 + 自适应瞬时速度估计，MuJoCo/DMC/HumanoidBench 打平或超扩散基线、2 步采样、训练快 ~50%。证据强度：强（ICML + 开源）。**必须跟：与 FLAC 构成 likelihood-approx vs likelihood-free 的直接路线对决。**
 
 ### B. Bridge × 具身
 
-- **BridgePolicy: Sample from What You See**（[arXiv:2512.07212](https://arxiv.org/abs/2512.07212)，ICML 2026，ShanghaiTech）——观测嵌入 SDE 动力学的 diffusion bridge 策略：从观测先验起步而非噪声，语义对齐器解决观测-动作维度错配；52 仿真任务 + 5 真机任务胜 DP/DP3/FlowPolicy。证据强度：强。**必须跟：informative source 策略的顶会锚点，且明确留下 few-step 与 RL 两个空格。**
+- **BridgePolicy: Sample from What You See**（[arXiv:2512.07212](https://arxiv.org/abs/2512.07212)，ICML 2026，ShanghaiTech；[解读](../papers/2512.07212_bridge_policy/README.md)）——观测嵌入 SDE 动力学的 diffusion bridge 策略：从观测先验起步而非噪声，语义对齐器解决观测-动作维度错配；52 仿真任务 + 5 真机任务胜 DP/DP3/FlowPolicy。证据强度：强。**必须跟：informative source 策略的顶会锚点，且明确留下 few-step 与 RL 两个空格。**
 - （对照）**RSBM**（本仓库已收录，IEEE TMM）仍是 few-step SB 具身唯一正式文献；BDGxRL 后 sim-to-real SB×RL 未检索到直接后续——该线竞争格局依旧未恶化。
 
 ### C. RL 微调路线演化
 
-- **π*0.6 / RECAP**（[arXiv:2511.14759](https://arxiv.org/abs/2511.14759)，Physical Intelligence）——优势条件化：价值函数打分 → 二值优势 token 条件化 VLA → 推理时永远条件"positive"；免策略梯度、免似然；真实家庭叠衣/装箱/做咖啡，最难任务吞吐翻倍、失败率减半。证据强度：强（真实部署级）。必须跟：工业界对 log π 障碍的答案。
-- **LP-DS: Lagrangian Perturbation Diffusion Steering**（[arXiv:2606.01151](https://arxiv.org/abs/2606.01151)，ICML 2026）——DSRL 的修正：学状态条件的残差噪声扰动 + 拉格朗日信赖域，防 latent 漂出高斯支撑与模式塌缩；RoboMimic/Gym/Adroit 回报最高 +25%，且用 KL 熵估计器量化了行为多样性保持。证据强度：强。值得跟：噪声空间 RL 的成熟形态 + mode coverage 评测先例。
-- **DF-ExpEnse**（[arXiv:2606.19656](https://arxiv.org/abs/2606.19656)，2026-06）——DSRL 的探索增强（batch 候选动作按探索兴趣选择）。证据强度：中。可选跟。
+- **π*0.6 / RECAP**（[arXiv:2511.14759](https://arxiv.org/abs/2511.14759)，Physical Intelligence；[解读](../papers/2511.14759_recap/README.md)）——优势条件化：价值函数打分 → 二值优势 token 条件化 VLA → 推理时永远条件"positive"；免策略梯度、免似然；真实家庭叠衣/装箱/做咖啡，最难任务吞吐翻倍、失败率减半。证据强度：强（真实部署级）。必须跟：工业界对 log π 障碍的答案。
+- **LP-DS: Lagrangian Perturbation Diffusion Steering**（[arXiv:2606.01151](https://arxiv.org/abs/2606.01151)，ICML 2026；[解读](../papers/2606.01151_lp_ds/README.md)）——DSRL 的修正：学状态条件的残差噪声扰动 + 拉格朗日信赖域，防 latent 漂出高斯支撑与模式塌缩；RoboMimic/Gym/Adroit 回报最高 +25%，且用 KL 熵估计器量化了行为多样性保持。证据强度：强。值得跟：噪声空间 RL 的成熟形态 + mode coverage 评测先例。
+- **DF-ExpEnse**（[arXiv:2606.19656](https://arxiv.org/abs/2606.19656)，2026-06；[解读](../papers/2606.19656_df_expense/README.md)）——DSRL 的探索增强（batch 候选动作按探索兴趣选择）。证据强度：中。可选跟。
+
+### D. 入库时补检到的相关新作
+
+- **FMQ: Aligning Flow Map Policies with Optimal Q-Guidance**（[arXiv:2605.12416](https://arxiv.org/abs/2605.12416)，2026-05；[解读](../papers/2605.12416_fmq/README.md)）——流映射策略统一框架 + 信赖域下 Q 引导的闭式更新，超 MVP 21.3%。**它无意中回答了「一步时代 path-space 邻近项还剩什么」：剩下的就是平均速度场上的信赖域。**
+- **PRISM**（[arXiv:2608.06893](https://arxiv.org/abs/2608.06893)，2026-08；[解读](../papers/2608.06893_prism/README.md)）——SB 参考过程设计理论：不可见性原理（参考只在有限步预算下有意义）+ 有限步最优噪声谱。把 SB 的差异化钉死在 few-step 区间。
+- **OMP**（[arXiv:2512.19347](https://arxiv.org/abs/2512.19347)，v3 2026-06；[解读](../papers/2512.19347_omp/README.md)）——诊断 MeanFlow 低速区的梯度饥饿，方向对齐修补；对 bridge matching 收口段同样适用。
+- 校正：MVP 实为 **ICLR 2026 Oral（top 1%）**，且是 offline-to-online RL 方法（best-of-N 选择 + IVC），不只是训练目标修补——一步族在 RL 侧的分量比雷达初稿估计的更重。
 
 ## 二、趋势判断
 

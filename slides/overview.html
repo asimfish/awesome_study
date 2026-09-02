@@ -47,9 +47,9 @@ td{border-bottom:1px solid var(--line);padding:7px 10px;vertical-align:top;line-
 <section class="slide cover active">
   <div>
     <p class="dim" style="font-size:18px;margin-bottom:14px">awesome_study · 全库综述 · 2026-09</p>
-    <h1>Schrödinger Bridge × RL × 机器人策略学习<br><span class="acc">32 篇精读 + 2026 趋势雷达</span></h1>
-    <p class="sub">从 DDPM 到 one-step SB policy：一条主线、三条线索、四条进路、五个空格</p>
-    <p><span class="pill">32 篇逐篇解读</span><span class="pill">6 大类别</span><span class="pill">12 篇保版式中译</span><span class="pill">10 篇 2026 新雷达</span></p>
+    <h1>Schrödinger Bridge × RL × 机器人策略学习<br><span class="acc">51 篇精读 + 2026 趋势雷达</span></h1>
+    <p class="sub">从 DDPM 到 one-step SB policy：一条主线、三条线索、五条路线、五个空格</p>
+    <p><span class="pill">51 篇逐篇解读</span><span class="pill">7 大类别</span><span class="pill">19 篇保版式中译</span><span class="pill">9 篇 2026 雷达已入库</span></p>
   </div>
 </section>
 
@@ -74,28 +74,30 @@ td{border-bottom:1px solid var(--line);padding:7px 10px;vertical-align:top;line-
       </ul>
     </div>
   </div>
-  <h3 style="margin-top:20px">四条解法路线（2026 已全部成型）</h3>
+  <h3 style="margin-top:20px">五条解法路线（2026 已全部成型，本库均有代表）</h3>
   <div class="flow">
     <div class="node"><b>逐步分解</b><br class=""><span class="dim">DPPO / DMPO：去噪链拆 MDP，逐步高斯似然</span></div>
     <div class="node"><b>路径空间</b><br><span class="dim">FLAC / GSB-MDPO：KL 搬到路径测度（SB 语言）</span></div>
     <div class="node"><b>噪声空间</b><br><span class="dim">DSRL / LP-DS：冻结解码器，RL 只动 latent</span></div>
     <div class="node"><b>条件化监督</b><br><span class="dim">RECAP / AWR：优势当条件或权重，免梯度</span></div>
+    <div class="node"><b>生成-选择</b><br><span class="dim">MVP / FMQ / DF-ExpEnse：采 N 个按 Q 选或闭式 Q 引导</span></div>
   </div>
 </section>
 
 <!-- 3 仓库地图 -->
 <section class="slide">
-  <h2>仓库地图：六类 32 篇</h2>
+  <h2>仓库地图：七类 51 篇</h2>
   <table>
     <tr><th>类别</th><th>篇目</th><th>一句话定位</th></tr>
-    <tr><td class="acc">01 生成模型基础 (6)</td><td>DDPM · Score-SDE · Flow Matching · OT-CFM · MeanFlow · Diffusion Policy</td><td>score → velocity → 平均速度场的一步化路线 + 机器人侧事实标准</td></tr>
+    <tr><td class="acc">01 生成模型基础 (7)</td><td>DDPM · Score-SDE · Flow Matching · OT-CFM · Rectified Flow · MeanFlow · Diffusion Policy</td><td>score → velocity → 平均速度场的一步化路线 + 机器人侧事实标准</td></tr>
     <tr><td class="acc">02 SB 理论 (4)</td><td>Léonard 综述 · DSB · GSBM · SB Foundations</td><td>path-space KL 数学正典 → 神经化 → 广义化 → 2026 教科书</td></tr>
-    <tr><td class="acc">03 Bridge 算法 (5)</td><td>I2SB · DSBM · SF2M · SB Flow · ASBM</td><td>IPF → IMF → 免仿真 → 在线 α-IMF → 对抗少步</td></tr>
+    <tr><td class="acc">03 Bridge 算法 (7)</td><td>I2SB · DSBM · SF2M · SB Flow · ASBM · Soft-SB · PRISM</td><td>IPF → IMF → 免仿真 → 在线 α-IMF → 对抗少步；软约束与参考过程理论</td></tr>
     <tr><td class="acc">04 RL 基础 (5)</td><td>PPO · SAC · MDPO · GRPO · AWR</td><td>trust region / max-ent / mirror descent / 免 critic / 加权 BC——SB×RL 的接口层</td></tr>
-    <tr><td class="acc">05 生成式策略 × RL (8)</td><td>DT · Diffuser · Diffusion-QL · DPPO · MP1 · DMPO · OFP · DBPO</td><td>序列建模 → 扩散规划 → offline Q+BC → online 微调 → 原生一步竞赛</td></tr>
+    <tr><td class="acc">05 生成式策略 × RL (15)</td><td>DT · Diffuser · Diffusion-QL · FQL · Consistency Policy · DPPO · Flow-GRPO · ReinFlow · DSRL · MP1 · DMPO · OFP · DBPO · OMP · FMQ</td><td>序列建模 → 扩散规划 → offline Q+BC → online 微调（分解/噪声空间）→ 原生一步竞赛 → 流映射统一</td></tr>
     <tr><td class="warn">06 SB × RL 前沿 (4)</td><td>FLAC · GSB-MDPO · RSBM · BDGxRL</td><td><b>选题主战场</b>：动能正则 / 路径镜像下降 / 桥矫正少步 / 跨域轨迹翻译</td></tr>
+    <tr><td class="acc">07 2026 雷达 (9)</td><td>MVP · MF-VLA · MFPO · ReactVLA · UCA-Flow · RECAP · LP-DS · DF-ExpEnse · BridgePolicy</td><td>MeanFlow 族扩张 / 桥式起点上主会 / 绕开似然的 RL 微调三组新变量</td></tr>
   </table>
-  <p class="dim">每篇配中文详细解读（papers/*/README.md），12 篇前沿另配保版式中译 PDF（SuperTranslate）。</p>
+  <p class="dim">每篇配中文详细解读（papers/*/README.md），19 篇前沿另配保版式中译 PDF（SuperTranslate）。</p>
 </section>
 
 <!-- 4 线索一 -->
@@ -214,6 +216,25 @@ td{border-bottom:1px solid var(--line);padding:7px 10px;vertical-align:top;line-
   </div>
 </section>
 
+<!-- 8b 扩展后的两个新判断 -->
+<section class="slide">
+  <h2>入库补检带来的两个新判断</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>① 「一步时代 path-space 还剩什么」有了答案</h3>
+      <p>三个同构的信赖域：<b>GSB-MDPO</b>（路径 KL）· <b>LP-DS</b>（latent 偏移 L2）· <b>FMQ</b>（平均速度场 L2，闭式解 $u^*=u^{\text{ref}}+\eta\,\nabla_aQ/\|\nabla_aQ\|$）。路径 KL 经 Girsanov 就是速度场 L2——<b>FMQ 的信赖域恰是 GSB-MDPO 邻近项在一步极限下的形式</b>。path-space 的价值不消失，只是塌缩成平均速度场上的信赖域；写清这三者的关系本身就是一篇有分量的短文。</p>
+    </div>
+    <div class="card">
+      <h3>② PRISM 把 SB 的差异化钉死在 few-step 区间</h3>
+      <p><b>不可见性原理</b>：精确漂移 + 无限步下，任何参考过程给出同一后验——换参考（FLAC 的高熵参考、informative reference 的种种设想）只在<b>有限步预算</b>下有意义。这恰好是机器人控制所在的区间。有限步最优噪声谱 ∝ 被摧毁信息谱 → 参考噪声应集中在「观测决定不了的动作维度」——informative source 先验设计的第一条可计算规则。</p>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h3>共性病理提醒（OMP / MVP）</h3>
+    <p style="font-size:16.5px">回归速度/漂移场的方法在<b>低模长区间梯度饥饿</b>（方向梯度 ∝ 目标模长），且 MeanFlow 恒等式作为一阶 ODE <b>缺边界条件解不唯一</b>。桥匹配在收口段同病——one-step SB policy 必须内置方向对齐 + 边界约束（IVC 的桥版本），否则精细操纵先输在这里。</p>
+  </div>
+</section>
+
 <!-- 9 空白与机会 -->
 <section class="slide">
   <h2>空白与机会：五个无人占位的格子</h2>
@@ -239,9 +260,9 @@ td{border-bottom:1px solid var(--line);padding:7px 10px;vertical-align:top;line-
     <div class="card">
       <h3>产物清单</h3>
       <ul>
-        <li>32 篇中文详细解读（papers/*/README.md）</li>
-        <li>英文原版 PDF 32 篇 + 保版式中译（进行中）</li>
-        <li>趋势报告 reports/TRENDS_2026.md（10 篇新雷达）</li>
+        <li>51 篇中文详细解读（papers/*/README.md）</li>
+        <li>英文原版 PDF 51 篇 + 19 篇保版式中译</li>
+        <li>趋势报告 reports/TRENDS_2026.md（雷达 9 篇已入库 + 3 篇补检）</li>
         <li>本 HTML PPT + Beamer PDF 报告</li>
       </ul>
     </div>
@@ -257,7 +278,7 @@ td{border-bottom:1px solid var(--line);padding:7px 10px;vertical-align:top;line-
 </section>
 
 </div>
-<div class="pagenum" id="pagenum">1 / 10</div>
+<div class="pagenum" id="pagenum">1 / 11</div>
 <div class="foot">← → 翻页 · <span class="kbd">Home</span> 回封面 · awesome_study 2026-09</div>
 <script>
 const slides=[...document.querySelectorAll('.slide')];let cur=0;

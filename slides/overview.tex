@@ -12,7 +12,7 @@
 \setbeamercolor{frametitle}{bg=acc,fg=white}
 
 \title{Schrödinger Bridge $\times$ RL $\times$ 机器人策略学习}
-\subtitle{awesome\_study 全库综述：32 篇精读 + 2026 趋势雷达}
+\subtitle{awesome\_study 全库综述：51 篇精读 + 2026 趋势雷达}
 \author{awesome\_study}
 \date{2026-09}
 
@@ -37,26 +37,27 @@
 \end{itemize}
 \end{columns}
 \vspace{6pt}
-\textbf{四条解法路线（2026 全部成型）}：逐步分解（DPPO/DMPO）· 路径空间（FLAC/GSB-MDPO）· 噪声空间（DSRL/LP-DS）· 条件化监督（RECAP/AWR）
+\textbf{五条解法路线（2026 全部成型）}：逐步分解（DPPO/ReinFlow）· 路径空间（FLAC/GSB-MDPO）· 噪声空间（DSRL/LP-DS）· 条件化监督（RECAP/AWR）· 生成-选择（MVP/FMQ）
 \end{frame}
 
-\begin{frame}{仓库地图：六类 32 篇}
+\begin{frame}{仓库地图：七类 51 篇}
 \small
 \begin{tabular}{@{}p{0.24\textwidth}p{0.70\textwidth}@{}}
 \toprule
 \textbf{类别} & \textbf{篇目与定位} \\
 \midrule
-01 生成模型基础 (6) & DDPM · Score-SDE · FM · OT-CFM · MeanFlow · Diffusion Policy —— score $\to$ velocity $\to$ 平均速度场的一步化路线 \\
+01 生成模型基础 (7) & DDPM · Score-SDE · FM · OT-CFM · Rectified Flow · MeanFlow · Diffusion Policy \\
 02 SB 理论 (4) & Léonard · DSB · GSBM · SB Foundations —— 数学正典 $\to$ 神经化 $\to$ 广义化 $\to$ 教科书 \\
-03 Bridge 算法 (5) & I$^2$SB · DSBM · SF$^2$M · SB Flow · ASBM —— IPF $\to$ IMF $\to$ 免仿真 $\to$ 在线化 $\to$ 对抗少步 \\
+03 Bridge 算法 (7) & I$^2$SB · DSBM · SF$^2$M · SB Flow · ASBM · Soft-SB · PRISM \\
 04 RL 基础 (5) & PPO · SAC · MDPO · GRPO · AWR —— SB$\times$RL 的接口层 \\
-05 生成式策略 $\times$ RL (8) & DT · Diffuser · Diffusion-QL · DPPO · MP1 · DMPO · OFP · DBPO —— 到原生一步竞赛 \\
+05 生成式策略 $\times$ RL (15) & DT · Diffuser · Diffusion-QL · FQL · CP · DPPO · Flow-GRPO · ReinFlow · DSRL · MP1 · DMPO · OFP · DBPO · OMP · FMQ \\
 06 SB $\times$ RL 前沿 (4) & \textbf{FLAC · GSB-MDPO · RSBM · BDGxRL —— 选题主战场} \\
+07 2026 雷达 (9) & MVP · MF-VLA · MFPO · ReactVLA · UCA-Flow · RECAP · LP-DS · DF-ExpEnse · BridgePolicy \\
 \bottomrule
 \end{tabular}
 \vspace{4pt}
 
-每篇配中文详细解读；12 篇前沿另配保版式中译 PDF。
+每篇配中文详细解读；19 篇前沿另配保版式中译 PDF。
 \end{frame}
 
 \begin{frame}{线索一：一步化的终局}
@@ -127,6 +128,16 @@ $\log\pi$ 处理 & 动能上界终端 KL & path-KL 作邻近项 & 不涉及（�
 \textbf{五条趋势}：一步化范式化 · $\log\pi$ 四路线互相对表（path-space 独缺真机）· informative source 上主会但只做 BC · mode coverage 从口号走向指标 · 工业界与学术界在「绕开似然」上合流
 \end{frame}
 
+\begin{frame}{入库补检带来的两个新判断}
+\textbf{(1) 一步时代 path-space 还剩什么}：三个同构信赖域——GSB-MDPO（路径 KL）· LP-DS（latent 偏移）· FMQ（平均速度场，闭式解 $u^*=u^{\mathrm{ref}}+\eta\,\nabla_aQ/\|\nabla_aQ\|$）。路径 KL 经 Girsanov 即速度场 $L^2$，\textbf{FMQ 的信赖域恰是 GSB-MDPO 邻近项的一步极限}。
+\vspace{6pt}
+
+\textbf{(2) PRISM 把 SB 差异化钉死在 few-step 区间}：不可见性原理——精确漂移 + 无限步下任何参考过程给同一后验，换参考只在有限步预算下有意义；有限步最优噪声谱 $\propto$ 被摧毁信息谱 $\to$ informative source 先验设计的第一条可计算规则。
+\vspace{6pt}
+
+\textbf{共性病理（OMP / MVP）}：速度/漂移回归在低模长区\textbf{梯度饥饿}；MeanFlow 恒等式缺边界条件\textbf{解不唯一}。桥匹配收口段同病——one-step SB policy 必须内置方向对齐 + 边界约束。
+\end{frame}
+
 \begin{frame}{空白与机会：五个无人占位的格子}
 \small
 \begin{tabular}{@{}clp{0.42\textwidth}l@{}}
@@ -152,7 +163,7 @@ SB$\times$RL 不是成熟工具，是有清晰 niche 的研究空间。一步化
 SB 的持久差异化资产只有两个：\textbf{informative source（边界即条件）}与 \textbf{$\epsilon$ 谱系（coverage--straightness 同旋钮）}；不落在这两点上的 SB 包装工作都会贬值。
 \vspace{10pt}
 
-\textbf{产物}：32 篇中文详细解读 · 英文 PDF 32 篇 + 保版式中译 · 趋势报告（10 篇新雷达）· HTML PPT + 本 PDF。
+\textbf{产物}：51 篇中文详细解读 · 英文 PDF 51 篇 + 19 篇保版式中译 · 趋势报告（雷达 9 篇已入库）· HTML PPT + 本 PDF。
 \end{frame}
 
 \end{document}
