@@ -1,6 +1,6 @@
 # Awesome Study: Schrödinger Bridge × RL × Robot Policy Learning
 
-![papers](https://img.shields.io/badge/papers-51-blue) ![zh--pdf](https://img.shields.io/badge/%E4%B8%AD%E6%96%87PDF-14-red) ![license](https://img.shields.io/badge/license-MIT-green)
+![papers](https://img.shields.io/badge/papers-51-blue) ![zh--pdf](https://img.shields.io/badge/%E4%B8%AD%E6%96%87PDF-19-red) ![license](https://img.shields.io/badge/license-MIT-green)
 
 围绕 **Schrödinger Bridge（SB）× 强化学习（RL）× 机器人策略学习** 的精读仓库。
 每篇论文配：中文详细解读（`papers/*/README.md`）、英文原版 PDF；12 篇前沿论文另配保版式中文翻译 PDF（[SuperTranslate](https://github.com/asimfish/super_translate) 生成）。
@@ -116,13 +116,13 @@ DSB 之后的算法演化主线：IPF → IMF → 免仿真 → 在线 α-IMF �
 |---|---|---|---|---|
 | Mean Flow Policy with Instantaneous Velocity Constraint for One-step Action Generation | — | ICLR 2026 (Oral) | ICLR 2026 Oral：平均速度策略 + best-of-N 选择做 offline-to-online RL，IVC 边界约束修 MeanFlow 恒等式解不唯一 | [arXiv](https://arxiv.org/abs/2602.13810) · [解读](papers/2602.13810_mvp/README.md) · [EN](papers/2602.13810_mvp/2602.13810.pdf) |
 | Mean-Flow based One-Step Vision-Language-Action | — | arXiv 2026 | MeanFlow 动作头进 VLA，真机比 SmolVLA 快 8.7 倍 | [arXiv](https://arxiv.org/abs/2603.01469) · [解读](papers/2603.01469_mf_vla/README.md) · [EN](papers/2603.01469_mf_vla/2603.01469.pdf) |
-| Mean Flow Policy Optimization | Dong et al. | ICML 2026 | MeanFlow 策略进 max-ent RL：平均散度网络硬算似然——FLAC 免似然路线的正面对手 | [arXiv](https://arxiv.org/abs/2604.14698) · [解读](papers/2604.14698_mfpo/README.md) · [EN](papers/2604.14698_mfpo/2604.14698.pdf) |
+| Mean Flow Policy Optimization | Dong et al. | ICML 2026 | MeanFlow 策略进 max-ent RL：平均散度网络硬算似然——FLAC 免似然路线的正面对手 | [arXiv](https://arxiv.org/abs/2604.14698) · [解读](papers/2604.14698_mfpo/README.md) · [EN](papers/2604.14698_mfpo/2604.14698.pdf) · [中文](papers/2604.14698_mfpo/2604.14698.zh.pdf) |
 | ReactVLA: Fast and Lightweight Reactive Robot Manipulation via Improved Mean Flow Action Generation | — | arXiv 2026 | 改进 MeanFlow（iMF）+ 注意力残差路由，真机延迟 <38.6 ms | [arXiv](https://arxiv.org/abs/2606.14255) · [解读](papers/2606.14255_reactvla/README.md) · [EN](papers/2606.14255_reactvla/2606.14255.pdf) |
-| Unified Condition-Action Modeling for Accurate One-Step Action Generation (UCA-Flow) | — | arXiv 2026 | 条件与动作统一 token 序列联合演化，一步生成 +9.3pp，比 MP1 快 2.3 倍 | [arXiv](https://arxiv.org/abs/2608.16153) · [解读](papers/2608.16153_uca_flow/README.md) · [EN](papers/2608.16153_uca_flow/2608.16153.pdf) |
-| π*0.6: a VLA That Learns From Experience (RECAP) | Physical Intelligence | arXiv 2025-11 | 优势条件化免策略梯度的真实世界 VLA RL，工业界对 log π 障碍的答案 | [arXiv](https://arxiv.org/abs/2511.14759) · [解读](papers/2511.14759_recap/README.md) · [EN](papers/2511.14759_recap/2511.14759.pdf) |
-| Lagrangian Perturbation Diffusion Steering: Latent Reinforcement Learning for Generative Policies | Simsir, Oguz | ICML 2026 | DSRL 的信赖域修正 + 首个动作熵多模态保持评测 | [arXiv](https://arxiv.org/abs/2606.01151) · [解读](papers/2606.01151_lp_ds/README.md) · [EN](papers/2606.01151_lp_ds/2606.01151.pdf) |
+| Unified Condition-Action Modeling for Accurate One-Step Action Generation (UCA-Flow) | — | arXiv 2026 | 条件与动作统一 token 序列联合演化，一步生成 +9.3pp，比 MP1 快 2.3 倍 | [arXiv](https://arxiv.org/abs/2608.16153) · [解读](papers/2608.16153_uca_flow/README.md) · [EN](papers/2608.16153_uca_flow/2608.16153.pdf) · [中文](papers/2608.16153_uca_flow/2608.16153.zh.pdf) |
+| π*0.6: a VLA That Learns From Experience (RECAP) | Physical Intelligence | arXiv 2025-11 | 优势条件化免策略梯度的真实世界 VLA RL，工业界对 log π 障碍的答案 | [arXiv](https://arxiv.org/abs/2511.14759) · [解读](papers/2511.14759_recap/README.md) · [EN](papers/2511.14759_recap/2511.14759.pdf) · [中文](papers/2511.14759_recap/2511.14759.zh.pdf) |
+| Lagrangian Perturbation Diffusion Steering: Latent Reinforcement Learning for Generative Policies | Simsir, Oguz | ICML 2026 | DSRL 的信赖域修正 + 首个动作熵多模态保持评测 | [arXiv](https://arxiv.org/abs/2606.01151) · [解读](papers/2606.01151_lp_ds/README.md) · [EN](papers/2606.01151_lp_ds/2606.01151.pdf) · [中文](papers/2606.01151_lp_ds/2606.01151.zh.pdf) |
 | DF-ExpEnse: Diffusion Filtered Exploration for Sample Efficient Finetuning | — | arXiv 2026 | DSRL/ResFiT 的探索增强：batch 候选动作按探索兴趣筛选 | [arXiv](https://arxiv.org/abs/2606.19656) · [解读](papers/2606.19656_df_expense/README.md) · [EN](papers/2606.19656_df_expense/2606.19656.pdf) |
-| Sample from What You See: Visuomotor Policy Learning via Diffusion Bridge with Observation-Embedded SDE (BridgePolicy) | Liu et al. (ShanghaiTech) | ICML 2026 | 观测嵌入 SDE 从观测先验起步而非噪声：informative source 策略的顶会锚点 | [arXiv](https://arxiv.org/abs/2512.07212) · [解读](papers/2512.07212_bridge_policy/README.md) · [EN](papers/2512.07212_bridge_policy/2512.07212.pdf) |
+| Sample from What You See: Visuomotor Policy Learning via Diffusion Bridge with Observation-Embedded SDE (BridgePolicy) | Liu et al. (ShanghaiTech) | ICML 2026 | 观测嵌入 SDE 从观测先验起步而非噪声：informative source 策略的顶会锚点 | [arXiv](https://arxiv.org/abs/2512.07212) · [解读](papers/2512.07212_bridge_policy/README.md) · [EN](papers/2512.07212_bridge_policy/2512.07212.pdf) · [中文](papers/2512.07212_bridge_policy/2512.07212.zh.pdf) |
 
 ## 汇总报告
 
