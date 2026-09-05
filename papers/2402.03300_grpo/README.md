@@ -4,49 +4,71 @@
 
 ## 一句话
 
-用组内相对优势替代 critic 网络（GRPO），让 PPO 式 RL 在大模型上便宜一半显存，成为 R1 一系推理 RL 与 VLA RL 微调的算法源头。
+GRPO 用同题多回答的相对奖励替代学习型价值基线，省去大模型 PPO 中整套 critic 训练，并在强数学 SFT 模型上验证了继续做策略优化的收益。
 
 ## 问题与动机
 
-论文主体是数学推理语言模型（DeepSeekMath 7B），但被后世反复引用的是 §4 的 GRPO 算法。PPO 在 LLM 上的痛点：value 网络和 policy 一样大，训练它既贵又不稳（reward 稀疏、逐 token 的 value 学不准）。GRPO 的观察：对同一个 prompt 采一组回答，组内平均回报本身就是 baseline，不需要学出来。
+DeepSeekMath 的贡献包含数学语料、继续预训练、监督微调和强化学习，GRPO 是第 4 节提出的 Group Relative Policy Optimization。其目标很具体：语言模型的 value 网络通常与 policy 规模相近，但奖励常落在回答末尾，逐 token 的价值估计既贵又难学。
+
+同一问题可以采样多个回答，直接用组内分数构造基线，避免拟合每个前缀的价值。这个交换省掉 critic，却增加了同题采样需求；policy、参考模型和奖励模型仍然存在，所以“总显存减半”不是由结构直接推出的结论。
 
 ## 方法核心
 
-对每个问题 $q$ 采样一组 $G$ 个输出 $\{o_1,\dots,o_G\}$，组内标准化的相对优势为
+对问题 $q$，从旧策略 $\pi_{\rm old}$ 采样 $G$ 个回答 $o_i$。结果监督版本由奖励模型给整段回答打分 $r_i$，并计算
 
 $$
-\hat{A}_i = \frac{r_i - \text{mean}(r_1,\dots,r_G)}{\text{std}(r_1,\dots,r_G)}
+\hat A_{i,t}=\frac{r_i-\operatorname{mean}(r_1,\ldots,r_G)}
+{\operatorname{std}(r_1,\ldots,r_G)}.
 $$
 
-目标函数保持 PPO-clip 形式，另加一个对参考策略的 KL 正则（写成逐 token 的无偏估计）：
+这里减均值与除标准差都在同一问题的组内进行；仅在结果监督版本中，同一回答所有 token 共享优势。它是基于采样组的更新信号，不能直接称为精确的 $Q-V$。
+
+定义条件 token 概率比 $\omega_{i,t}=\pi_\theta(o_{i,t}|q,o_{i,<t})/\pi_{\rm old}(o_{i,t}|q,o_{i,<t})$，并保留原文对每个回答长度的归一化：
 
 $$
-\mathcal{L} = \mathbb{E}\Big[\min\big(r_t\hat{A}_i,\ \text{clip}(r_t,1\pm\epsilon)\hat{A}_i\big)\Big] - \beta\, \mathrm{KL}(\pi_\theta\,\|\,\pi_{\text{ref}})
+J(\theta)=\mathbb E\!\left[\frac1G\sum_{i=1}^{G}\frac1{|o_i|}
+\sum_{t=1}^{|o_i|}\left\{
+\min[\omega_{i,t}\hat A_{i,t},\operatorname{clip}(\omega_{i,t},1-\epsilon,1+\epsilon)\hat A_{i,t}]
+-\beta\hat D_{i,t}\right\}\right].
 $$
 
-- 去掉了 critic：优势不来自 $Q-V$，来自组内比较。代价是优势是回合级常数（同一回答内每个 token 共享），credit assignment 更粗。
-- $\pi_{\text{ref}}$：SFT 模型，防漂移。
+$\epsilon$ 控制裁剪区间，$\beta$ 控制对参考策略的正则；外层期望覆盖问题及旧策略生成的回答。KL 项直接进入损失，不混进奖励和组优势，因而参考约束与组内好坏比较是两个独立部件。
 
-DeepSeekMath 本身的贡献链条：120B 数学 token 预训练 → SFT → GRPO，7B 模型 MATH 达到 51.7%，逼近当时的 GPT-4。
+原文式 (4) 使用逐 token 估计量
+
+$$
+\hat D_{i,t}=x_{i,t}-\log x_{i,t}-1,\qquad
+x_{i,t}=\frac{\pi_{\rm ref}(o_{i,t}|q,o_{i,<t})}
+{\pi_\theta(o_{i,t}|q,o_{i,<t})}.
+$$
+
+该量非负；固定前缀、token 按当前策略采样时，其期望为当前到参考策略的 KL。原文目标使用旧策略样本，因此重复更新后的无偏性不能无条件照搬。$\pi_{\rm old}$ 服务于采样比率，$\pi_{\rm ref}$ 服务于正则；迭代 RL 会更新参考模型，不能把它永远等同于初始 SFT 模型。
+
+第 4.1.3 节已给出过程监督：对同组回答中的步骤奖励统一标准化，再将当前位置以后各步骤的标准化奖励相加，形成 token 优势。第 4.1.4 节进一步更新奖励模型，并刷新参考策略；过程监督不是后人补给 GRPO 的功能。
 
 ## 实验与证据
 
-- MATH benchmark：GRPO 把 DeepSeekMath-Instruct 7B 从 46.8% 提到 51.7%（top1），GSM8K 82.9%→88.2%。
-- 相对 PPO：同等效果下省掉 value 网络的全部显存与训练开销。
-- 后续外部证据（非本文）：R1-Zero 证明纯 GRPO 可以从 base 模型直接激发推理能力，SimpleVLA-RL 等把它搬进 VLA。
+DeepSeekMath-Base 7B 从 DeepSeek-Coder-Base-v1.5 7B 继续训练；120B tokens 指所构建数学语料的规模，总续训量为 500B tokens，还混入代码和自然语言。随后得到 Instruct 模型，再以约 144K 道 SFT 来源的 GSM8K、MATH 问题做 RL；第 4.2 节每题采样 64 个输出。
+
+表 5 的无工具 Top1 结果中，MATH 从 Instruct 的 46.8% 升到 RL 的 51.7%，GSM8K 从 82.9% 升到 88.2%；51.7% 属于 RL 模型，不能归到 Base。中文 CMATH 从 84.6% 升到 88.8%，但这表示 RL 阶段未使用该基准的数据，不表示此前预训练和 SFT 没有中文数学内容。
+
+图 5 在 1.3B 模型上比较 RFT、在线 RFT、结果监督 GRPO 与过程监督 GRPO，支持在线采样及细粒度步骤信号的作用；图 6 检查迭代 RL。原文没有提供匹配训练预算的 PPO—GRPO 显存实测表，上述提升验证了 RL 阶段收益，尚不能单独归因于“组基线优于 critic”。
 
 ## 在谱系中的位置
 
-- 上游：[PPO](../1707.06347_ppo/)。
-- 下游（本仓库内）：机器人侧的 Flow-GRPO、SimpleVLA-RL 等 R1-style VLA RL（见 [趋势报告](../../reports/TRENDS_2026.md)）；与 [AWR](../1910.00177_awr/) 同属"绕开精确 critic"的路线。
+GRPO 保留 [PPO](../1707.06347_ppo/) 的裁剪代理目标，替换优势来源，并把参考 KL 放入独立损失；创新点不是放弃似然，而是用同题采样分摊基线估计。
+
+与 [AWR](../1910.00177_awr/) 的指数优势加权回归不同，GRPO 用带正负号的组优势和概率比更新；AWR 仍训练价值基线，两者不能统称为“去 critic”。[Flow-GRPO](../2505.05470_flow_grpo/) 是本仓库里值得对照的生成策略方向，但数学问答结果不构成机器人控制证据。
 
 ## 与 SB×RL 的关联
 
-GRPO 对生成式策略 RL 的意义在于它把对 $\log\pi$ 的依赖降到最低形态：只需要 ratio（新旧策略的相对似然），且优势不需要 critic。对于扩散/流策略，逐去噪步的 ratio 仍然可算（每步是高斯），所以 GRPO 是 log π 障碍下少数能直接用的 on-policy 算法——Flow-GRPO 就是这么做的。对 SB 策略：组内相对优势 + 路径空间 KL 正则的组合（GRPO 外壳 + GSB-MDPO 内核）是一个还没人做的空格。
+可在能复位的机器人仿真中，从同一初始状态采一组 SB 策略轨迹，按成功率或任务回报构造组优势，比较它与学习型价值基线的样本效率。必须把复位、每组多次 rollout 和生成步数计入预算；若状态或任务难度不同，直接组内比较会把环境差异误当成策略优劣。
+
+实现上应先检查 SB 采样器是否给出可评估的随机转移密度，再构造新旧路径比率与参考路径 KL，并用相同采样器测试惩罚强度对成功率和动作多样性的影响。确定性流并不自动拥有高斯去噪步，路径比率也不是终端动作似然比；只有界定了随机过程和所优化的路径目标，组相对更新才有清楚含义。这是可检验的迁移方案，现有原文未验证其机器人收益。
 
 ## 局限与批判
 
-- 回合级优势没有过程监督，长序列 credit assignment 粗糙；后续工作（PRM、step-level GRPO）都在补这里。
-- std 归一化在组内回报全对/全错时退化（除零或优势为零），实际实现要加保护，数学上不优雅。
-- KL 正则的无偏估计子在 ratio 大时方差爆炸，这个问题论文没讨论。
-- 论文将预训练/SFT/RL 三段混在一起报数，GRPO 单独的贡献量化得不干净。
+- 结果监督对整段回答使用相同优势，错误步骤与补救步骤共享更新方向，过程监督则把负担转给步骤奖励质量。
+- 同题奖励全相同时标准差为零，原文公式未给退化处理，此时组相对信号本身也已消失。
+- 除以组标准差会改变不同问题的相对权重，小分差问题可能被放大，优化的不再只是原始平均奖励。
+- 去 critic 的代价是大量同题采样，而匹配总算力后的 PPO 对照和显存节省比例原文未报告。

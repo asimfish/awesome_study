@@ -1,46 +1,66 @@
 # Diffusion Schrödinger Bridge Matching
 
-> Shi, De Bortoli, Campbell, Doucet (Oxford), NeurIPS 2023。[arXiv:2303.16852](https://arxiv.org/abs/2303.16852)
+> Shi, De Bortoli, Campbell, Doucet (Oxford & ENS ULM), NeurIPS 2023。[arXiv:2303.16852](https://arxiv.org/abs/2303.16852)
 
 ## 一句话
 
-用「SB 解是唯一既 Markov 又 reciprocal 的路径测度」这一刻画，设计出 Markov 投影与 reciprocal 投影交替的 IMF 算法，修复了 DSB 的边际漂移——现代 SB 求解器的主干。
+DSBM 把参考桥重建与双向漂移回归组成可迭代求解器，显著缓解 DSB 的误差积累，使「学到两端分布」进一步接近「学对两端之间的 SB 耦合」。
 
 ## 问题与动机
 
-DSB 的神经 IPF 有个实践中致命的毛病：每轮半桥拟合都有回归误差，误差让过程慢慢「忘掉」它本该保持的边际，迭代越多漂得越远。诊断：IPF 的投影方向（KL 约束在单端边际）对拟合误差不鲁棒。DSBM 换一组投影：不在「边际」上交替，在「过程类」上交替。
+生成样本匹配目标分布，不代表连接源与目标的路径接近最优传输。Bridge Matching 可以拟合任意端点耦合的桥混合，但耦合本身仍可能很差；DSB 用迭代比例拟合 IPF 求 SB，却要反复学习上一轮过程的时间反演，离散轨迹和回归误差会积累。
+
+论文指出两个不同问题：数值过程会偏离应当保持的边际，也会「忘掉」参考过程的条件桥。IMF 换用 Markov 类与参考 reciprocal 类之间的交替投影；DSBM 再把它实现为连续时间回归。理论投影保持边际，神经近似仍会产生偏差，不能把前者写成后者的自动保证。
 
 ## 方法核心
 
-理论基石（Léonard）：SB 解 $\mathbb{P}^\star$ 是唯一同时满足以下两条的路径测度——(a) Markov；(b) reciprocal（给定两端点，中间路径分布 = 参考桥）。IMF（Iterative Markovian Fitting）据此交替投影：
+给定边界分布 $\pi_0,\pi_T$ 和参考扩散 $dX_t=f_t(X_t)dt+\sigma_t dB_t$，SB 最小化路径 KL：
 
 $$
-\text{reciprocal 投影：}\ \Pi_{\mathcal{R}}(\mathbb{P}) = \int \mathbb{Q}^{x_0,x_T}\,d\,\mathbb{P}_{0,T}\qquad
-\text{Markov 投影：}\ \Pi_{\mathcal{M}}(\mathbb{P}) = \arg\min_{\mathbb{M}\in\mathcal{M}}\mathrm{KL}(\mathbb{P}\,\|\,\mathbb{M})
+\mathbb P^{\rm SB}=\arg\min_{\mathbb P:\,\mathbb P_0=\pi_0,\,\mathbb P_T=\pi_T}
+\mathrm{KL}(\mathbb P\|\mathbb Q).
 $$
 
-- reciprocal 投影：保留当前模型的端点耦合 $\mathbb{P}_{0,T}$，中间用参考桥重填——采样即可实现，无需训练；
-- Markov 投影：把「桥的混合」回归成一个 Markov SDE 的 drift——就是标准 bridge matching 回归；
-- 两步都**严格保持两端边际不动**（耦合的边际在两类投影下都不变），DSB 的漂移问题从结构上消失。每轮 KL 单调下降、收敛到 SB。
-- 实现为交替训练前向/反向两个 drift 网络（IMF 的前后向版本），或看作「先 coupling 后 matching」的循环——与 [OT-CFM](../2302.00482_ot_cfm/) 一族的静态近似的区别是：耦合由模型自己迭代改进而非 minibatch OT 一次拍死。
+命题 5 的关键条件缺一不可：满足指定的两端边际、属于 Markov 类、且给定端点后的条件路径等于参考桥；在文中正则性假设下，这样的过程唯一且就是 SB。「reciprocal」在这里特指参考测度 $\mathbb Q$ 的 reciprocal 类，不能只理解为一般的双向依赖性质。
+
+IMF 从边际正确的端点耦合及其参考桥混合出发，交替执行：
+
+$$
+\operatorname{proj}_{\mathcal R(\mathbb Q)}(\mathbb P)
+=\mathbb P_{0,T}\mathbb Q_{\mid0,T},\qquad
+\operatorname{proj}_{\mathcal M}(\Pi)
+=\arg\min_{\mathbb M\in\mathcal M}\mathrm{KL}(\Pi\|\mathbb M).
+$$
+
+reciprocal 投影保留端点耦合，用参考桥重建中间过程；它保持两端边际，但不保持全部中间边际。精确 Markov 投影把桥混合变成 Markov 扩散，保持各时刻的单点边际，却通常改变端点耦合和条件桥。两步反复纠正彼此，命题 7 与定理 8 给出 $\mathrm{KL}(\mathbb P^n\|\mathbb P^{\rm SB})$ 单调不增及其趋零的条件。
+
+布朗参考过程下，前向漂移通过回归 $(X_T-X_t)/(T-t)$ 学习（式 5）；标签取决于端点，网络只看当前状态与时间，回归最优解就是条件均值。端点由上一轮过程采样，中间状态由解析参考桥生成，因此无需缓存整条训练轨迹，但生成新端点仍需模拟学到的过程。
+
+第 4 节明确展示单向近似 IMF 会积累边际偏差。实用 DSBM 交替学习前后向漂移，并分别从真实 $\pi_0$、$\pi_T$ 初始化，纠正相应起点的偏差。DSBM-IMF 用独立端点耦合初始化；DSBM-IPF 用参考过程的端点联合分布初始化，并在理想拟合下恢复 IPF 迭代；DSBM-IMF+ 还允许小批量熵正则 OT 初始化。
 
 ## 实验与证据
 
-- 高斯基准（SB 有闭式解）：DSBM 收敛到真解，DSB 随迭代漂离——方法论主张的直接验证。
-- unpaired 翻译（EMNIST↔MNIST、下采样 CelebA）：质量与边际保持均优于 DSB/Rectified Flow 基线。
-- 单细胞动力学插值：与 SF2M 可比，但适用范围更广（不依赖静态 OT 近似）。
+- 二维基准的表 2：DSBM 相比 DSB 降低采样误差，但 OT-CFM 总体最强，Rectified Flow 在多项任务的误差也更低；迭代求 SB 并非所有生成任务的最优选择。
+- 五十维高斯实验的图 3：均值正确仍可能伴随方差或端点协方差错误，DSBM 比 DSB 和单向 IMF 更稳定；表 3 进一步比较过程边际与解析 SB 的 KL，而非只看终点样本。
+- MNIST／EMNIST 迁移的图 4–5：DSB 和 Rectified Flow 在训练中出现质量退化，DSBM 保持更好的图像质量；这是误差积累主张的应用证据。
+- 图像实验还包括 CelebA 64×64、128×128 和 AFHQ 512×512，规模已覆盖高分辨率图像；CelebA 消融显示噪声增强会改善部分 FID，却降低输入输出对齐程度。
+- 流体场实验用无配对的低、高分辨率数据学习重建，图 11 显示比 Diffusion-fb 更低的源图一致性误差。
 
 ## 在谱系中的位置
 
-- 上游：[DSB](../2106.01357_dsb/)（被修复者）、[Léonard](../1308.0215_leonard_survey/)（Markov∩reciprocal 刻画）、bridge matching（Peluchetti）。
-- 下游（本仓库内）：[SB Flow](../2409.09347_sb_flow/) 把 IMF 在线化（α-IMF）；[ASBM](../2405.14449_adv_sbm/) 做离散时间对抗版（D-IMF）；06 类的 path-space 语言（GSB-MDPO）直接沿用 IMF 的投影词汇。
+[DSB](../2106.01357_dsb/) 是直接比较对象，[Léonard 综述](../1308.0215_leonard_survey/) 提供 SB 与参考 reciprocal 类的理论背景，Peluchetti 的并行工作独立提出了名为 IDBM 的相关迭代方法，不能把这一构造独占归给 DSBM。
+
+[OT-CFM](../2302.00482_ot_cfm/) 借静态小批量耦合改善一次匹配；DSBM 可以沿用这种初始化，再通过模型生成的耦合继续迭代。随机性趋零联系到 [Rectified Flow](../2209.03003_rectified_flow/)，但非退化扩散是其 SB 唯一性刻画的重要条件，不能把零噪声迭代直接等同于同一收敛定理。
 
 ## 与 SB×RL 的关联
 
-IMF 是 SB×RL 算法设计的「标准零件库」：reciprocal 投影 = 用当前策略生成端点、参考桥填充路径（纯采样）；Markov 投影 = 把好的路径混合蒸馏回一个可执行策略（纯回归）。这个「采样-蒸馏」循环与 RL 里 planner-distillation、expert iteration 结构同构，嫁接点显然：在 reciprocal 步的端点采样里注入 advantage 加权（好端点多采），就得到一个 RL 化的 IMF——这条构造在 2026-09 没有正式文献。工程警告也从这里来：IMF 每轮要缓存/重生成样本，训练成本是 SB 策略上真机的最大障碍（SB Flow 的在线化正是为此）。
+可做的迁移是条件动作分布修正：固定观测，用行为策略动作作为源分布，用优势加权后的离线动作定义目标分布，再以 DSBM 拟合两者之间的传输。应固定目标权重完成内层桥求解，再更新价值函数；若每轮投影都改变目标分布，就不能引用固定边界的 IMF 收敛结论。比较一次 Bridge Matching 与多轮 DSBM，检查收益是否足以抵偿采样和回归成本。
+
+另一个有用用途是策略蒸馏的诊断：除目标动作分布外，检查源动作与输出动作的耦合、控制代价及闭环成功率，避免把终点拟合误当成策略改进。参考桥中的路径是动作生成路径，不自动遵守机器人真实动力学；若要生成可执行状态轨迹，必须把动力学和接触约束纳入建模。这些是实验设计，原文未验证奖励优化或真机收益。
 
 ## 局限与批判
 
-- 迭代训练的成本没有消失，只是从「不稳」换成「贵」：每轮 Markov 投影都是一次完整的回归训练。
-- 收敛速度对参考过程方差 $\sigma$ 敏感，$\sigma$ 小（接近 OT）时耦合改进极慢。
-- 图像实验仍在低分辨率，规模化要等 SB Flow。
+- 精确 IMF 的边际保持与 KL 收敛不覆盖有限网络和有限回归误差，双向训练只能缓解数值偏差。
+- 每轮仍要模拟学到的过程并重建端点缓存，回归目标可解析不等于整个训练免模拟。
+- 小扩散系数使熵正则 OT 更难数值求解，噪声选择还牵动图像质量与输入对齐的冲突。
+- CIFAR-10 上相对 Bridge／Flow Matching 的提升有限，多轮桥求解的额外成本缺少普遍生成收益支撑。

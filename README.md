@@ -14,6 +14,8 @@
 
 ## 目录
 
+**先读** [十分钟速览](reports/DIGEST.md) · **要选题** [开放问题](reports/OPEN_PROBLEMS.md) · **查词** [术语表](reports/GLOSSARY.md) · **按背景读** [阅读路线](reports/READING_PATHS.md) · **横向比** [对比表](reports/COMPARISON.md)
+
 - [生成模型基础（score / velocity / one-step）](#生成模型基础score-velocity-one-step)（7 篇）
 - [Schrödinger Bridge 理论](#schrödinger-bridge-理论)（4 篇）
 - [Bridge 算法（DSB 之后）](#bridge-算法dsb-之后)（7 篇）
@@ -131,10 +133,19 @@ DSB 之后的算法演化主线：IPF → IMF → 免仿真 → 在线 α-IMF �
 | [`slides/overview.html`](slides/overview.html) | HTML PPT：全库综述（浏览器打开，方向键翻页） |
 | [`slides/overview.pdf`](slides/overview.pdf) | PDF 版综述报告（Beamer） |
 | [`reports/TRENDS_2026.md`](reports/TRENDS_2026.md) | 2026 前沿趋势与 insight 报告 |
+| [`reports/DIGEST.md`](reports/DIGEST.md) | **十分钟速览**：核心矛盾、五条路线、三条线索、两个差异化资产、五个空格 |
+| [`reports/OPEN_PROBLEMS.md`](reports/OPEN_PROBLEMS.md) | 五个开放问题的实验设计：假设 / 最小实验 / 对表 / 杀死条件 / 零件 |
+| [`reports/COMPARISON.md`](reports/COMPARISON.md) | 横向对比：一步策略 · log π 路线 · SB 求解器 三张表 |
+| [`reports/READING_PATHS.md`](reports/READING_PATHS.md) | 按背景（生成 / RL / 机器人）与时间预算的阅读路线 |
+| [`reports/GLOSSARY.md`](reports/GLOSSARY.md) | 术语表：SB 家族 · 求解器 · 一步生成 · RL 接口 |
 
 ## 趋势与 insight
 
-见 [`reports/TRENDS_2026.md`](reports/TRENDS_2026.md)：2026 年 5 月后的新论文雷达、趋势判断、空白与机会、风险。
+见 [`reports/TRENDS_2026.md`](reports/TRENDS_2026.md)：2026 年 5 月后的新论文雷达、趋势判断、空白与机会、风险。选题直接看 [`reports/OPEN_PROBLEMS.md`](reports/OPEN_PROBLEMS.md)。
+
+## 质量说明
+
+51 篇解读均经两轮处理：先由 Claude 基于 PDF 原文与知识库笔记撰写，再由本地 Codex CLI（GPT-6，reasoning xhigh）逐篇对照原文核对数字、归属与机制并打磨文风。每篇的修订要点见 `reports/polish_log_*.md`。
 
 ## 构建工具
 
