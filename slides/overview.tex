@@ -61,14 +61,14 @@
 \end{frame}
 
 \begin{frame}{线索一：一步化的终局}
-\textbf{步数演化}：DDPM(1000) $\to$ DDIM/FM(10--50) $\to$ OT-CFM(5--10) $\to$ 蒸馏/Consistency(1--2，需教师) $\to$ \textbf{MeanFlow 原生 1-NFE（免蒸馏）}
+\textbf{步数演化}：DDPM(1000) $\to$ DDIM/FM（多步积分） $\to$ OT-CFM（少步依任务） $\to$ 蒸馏/Consistency Policy（1 或 3，需教师） $\to$ \textbf{MeanFlow 原生 1-NFE（免蒸馏）}
 \vspace{4pt}
 
 \textbf{关键机制}：学区间平均速度 $u(z_t,r,t)=\frac{1}{t-r}\int_r^t v\,d\tau$，恒等式
 $u = v-(t-r)\tfrac{d}{dt}u$ 给出免教师回归目标；ImageNet 256 一步 FID 3.43。
 \vspace{4pt}
 
-\textbf{进入机器人（半年五连发）}：MP1（1-NFE 操纵，6.8ms）$\to$ DMPO（+PPO，$>$120Hz 真机）$\to$ OFP（免 JVP 自蒸馏，一步超 $\pi_{0.5}$ 十步）$\to$ DBPO（drift 固定点，105.2Hz 双臂）
+\textbf{进入机器人（四篇代表）}：MP1（1-NFE 操纵，6.8ms）$\to$ DMPO（+PPO，104.2Hz 真机端到端）$\to$ OFP（免 JVP 自蒸馏，一步超 $\pi_{0.5}$ 十步）$\to$ DBPO（drift 固定点，105.2Hz 双臂）
 \vspace{4pt}
 
 \alert{判断：「多步 vs 一步」争论已结束；SB 必须卖一步化没有的东西。}
@@ -78,9 +78,9 @@ $u = v-(t-r)\tfrac{d}{dt}u$ 给出免教师回归目标；ImageNet 256 一步 FI
 \textbf{Girsanov 动能恒等式}
 \[
 \mathrm{KL}(\mathbb{P}^u\,\|\,\mathbb{Q}) = \mathbb{E}\Big[\int_0^1 \tfrac{1}{2\sigma^2}\|u\|^2\,dt\Big]
-\qquad\text{路径 KL = 漂移动能，不算任何密度}
+\qquad\text{同初态、同非零扩散及 Girsanov 条件下成立}
 \]
-FLAC：SAC 的策略熵 $\to$ 动能预算 + 拉格朗日自动调节（免似然 max-ent RL）。
+FLAC：显式熵计算 $\to$ 动能预算 + 自动调节（ODE 仅有几何约束）。
 \vspace{4pt}
 
 \textbf{数据处理不等式}
@@ -88,18 +88,18 @@ FLAC：SAC 的策略熵 $\to$ 动能预算 + 拉格朗日自动调节（免似�
 \mathrm{KL}(\mathbb{P}\,\|\,\mathbb{Q}) \ge \mathrm{KL}(\mathbb{P}_1\,\|\,\mathbb{Q}_1)
 \qquad\text{压路径就压住了执行动作分布}
 \]
-GSB-MDPO：MDPO 邻近项搬进路径空间，drift-MSE 即路径 KL 的离散形式。
+GSB-MDPO：MDPO 邻近项搬进路径空间，加权 drift-MSE 一阶近似路径 KL。
 \vspace{4pt}
 
-\alert{格局：理论位已被占满；两篇全是 locomotion 仿真——操纵/视觉/真机全空。MFPO（ICML 2026）走似然近似路线正面叫板。}
+\alert{格局：理论位已被占满；两篇以状态仿真为主——视觉操纵/VLA/真机全空。MFPO（ICML 2026）走似然近似路线正面叫板。}
 \end{frame}
 
 \begin{frame}{线索三：桥式先验——informative source 的红利}
 \begin{itemize}
-  \item \textbf{图像（I$^2$SB）}：退化图当边界而非条件，修复 4 任务全胜，NFE 几百 $\to$ 约 20。起点带信息 $\to$ 路径短 $\to$ 少步稳。
-  \item \textbf{导航（RSBM）}：学习先验 + $\epsilon$ 旋钮（布朗桥 $\leftrightarrow$ OT 连续换挡），3 步 92\% 成功率免蒸馏。$\epsilon$ 谱系 = SB 独有的 coverage--straightness 权衡。
-  \item \textbf{操纵（BridgePolicy, ICML 2026）}：观测嵌入 SDE 从观测先验起步，52 仿真 + 5 真机任务胜 DP/DP3/FlowPolicy——顶会正面验证桥式起点（但只做了 BC 半场）。
-  \item \textbf{跨域（BDGxRL)}：DSB 在线翻译源域转移 + 奖励调制，MuJoCo 跨域全胜 DARC 系；像素级 sim-to-real SB 至今无人做。
+  \item \textbf{图像（I$^2$SB）}：退化图当边界而非条件，四类修复、九种设置有指标取舍，特定补全 2--10 NFE 接近最佳。起点带信息 $\to$ 路径短 $\to$ 少步稳。
+  \item \textbf{导航（RSBM）}：学习先验 + $\epsilon$ 旋钮（随机条件桥 $\leftrightarrow$ 确定插值），室内仿真 3 步 92\% 成功率免蒸馏。$\epsilon$ 谱系 = SB 独有的 coverage--straightness 权衡。
+  \item \textbf{操纵（BridgePolicy, ICML 2026）}：观测嵌入 SDE 从观测先验起步，52 仿真 + 5 真机任务均值领先对应基线，10 NFE（FlowPolicy 为 1）——顶会正面验证桥式起点（但只做了 BC 半场）。
+  \item \textbf{跨域（BDGxRL)}：DSB 在线翻译源域转移 + 奖励调制，MuJoCo 跨域 18 个设置均值均领先 DARC 等基线；像素级 sim-to-real SB 至今无人做。
 \end{itemize}
 \end{frame}
 
@@ -109,33 +109,33 @@ GSB-MDPO：MDPO 邻近项搬进路径空间，drift-MSE 即路径 KL 的离散�
 \toprule
  & \textbf{FLAC} & \textbf{GSB-MDPO} & \textbf{RSBM} & \textbf{BDGxRL} \\
 \midrule
-问题定义 & max-ent = 对高熵参考的 GSB & 邻近更新进路径测度 & few-step 桥矫正 & 动力学差距 = unpaired 翻译 \\
-$\log\pi$ 处理 & 动能上界终端 KL & path-KL 作邻近项 & 不涉及（纯监督） & 不涉及（翻译后 SAC） \\
-实验面 & DMC + HumanoidBench & 14 个 MuJoCo 任务 & 导航 3 步 92\% & MuJoCo 跨域 \\
+问题定义 & GSB 动能正则替代熵计算 & 邻近更新进路径测度 & few-step 桥矫正 & 动力学差距 = unpaired 翻译 \\
+$\log\pi$ 处理 & SDE 约束 KL；ODE 约束 $W_2$ & path-KL 作邻近项 & 不涉及（纯监督） & 不涉及（翻译后 SAC） \\
+实验面 & DMC + HumanoidBench & 8 Playground + 6 Gym-MuJoCo & 室内仿真 3 步 92\% & MuJoCo 跨域 \\
 最大短板 & 无操纵/真机 & 路径比率高方差 & 无 RL & 低维状态 \\
 启示 & informative reference 增量 & 装进操纵 = 占两格 & $\epsilon$ 谱是核心资产 & 像素级窗口开着 \\
 \bottomrule
 \end{tabular}
 \end{frame}
 
-\begin{frame}{2026 雷达（2--8 月，10 篇）}
-\textbf{一步族扩张}：MVP（2602.13810，边界约束）· MF-VLA（2603.01469）· ReactVLA（2606.14255）· \alert{MFPO（2604.14698, ICML：MeanFlow+max-ent，FLAC 正面对手）} · UCA-Flow（2608.16153，+9.3pp）
+\begin{frame}{2026 雷达（2025-11 至 2026-08，9 篇）}
+\textbf{少步族扩张}：MVP（2602.13810，边界约束）· MF-VLA（2603.01469）· ReactVLA（2606.14255，仿真 2 步/真机 5 步）· \alert{MFPO（2604.14698, ICML：两步 MeanFlow+max-ent，FLAC 正面对手）} · UCA-Flow（2608.16153，对 MP1 报称 +9.3pp，均值口径不符）
 \vspace{6pt}
 
-\textbf{RL 微调路线}：$\pi^*_{0.6}$/RECAP（2511.14759：优势条件化免策略梯度，真实任务吞吐翻倍）· LP-DS（2606.01151, ICML：DSRL 修正 + \textbf{首个动作熵多模态评测}）· DF-ExpEnse（2606.19656）· BridgePolicy（2512.07212, ICML）
+\textbf{RL 微调路线}：$\pi^*_{0.6}$/RECAP（2511.14759：优势条件化免策略梯度，困难叠衣/浓缩咖啡成功吞吐超两倍）· LP-DS（2606.01151, ICML：DSRL 修正 + \textbf{动作熵与模式覆盖评测}）· DF-ExpEnse（2606.19656）· BridgePolicy（2512.07212, ICML）
 \vspace{6pt}
 
 \textbf{五条趋势}：一步化范式化 · $\log\pi$ 四路线互相对表（path-space 独缺真机）· informative source 上主会但只做 BC · mode coverage 从口号走向指标 · 工业界与学术界在「绕开似然」上合流
 \end{frame}
 
 \begin{frame}{入库补检带来的两个新判断}
-\textbf{(1) 一步时代 path-space 还剩什么}：三个同构信赖域——GSB-MDPO（路径 KL）· LP-DS（latent 偏移）· FMQ（平均速度场，闭式解 $u^*=u^{\mathrm{ref}}+\eta\,\nabla_aQ/\|\nabla_aQ\|$）。路径 KL 经 Girsanov 即速度场 $L^2$，\textbf{FMQ 的信赖域恰是 GSB-MDPO 邻近项的一步极限}。
+\textbf{(1) 一步时代 path-space 还剩什么}：三个可比较的偏移约束——GSB-MDPO（路径 KL）· LP-DS（latent 偏移）· FMQ（平均速度场，局部线性 Q 解 $u^*=u^{\mathrm{ref}}+\eta\,\nabla_aQ/\|\nabla_aQ\|$）。同初态、同非零扩散下，路径 KL 对应相对漂移的加权 $L^2$，\textbf{与 FMQ 平均速度约束的一步等价性仍需证明}。
 \vspace{6pt}
 
-\textbf{(2) PRISM 把 SB 差异化钉死在 few-step 区间}：不可见性原理——精确漂移 + 无限步下任何参考过程给同一后验，换参考只在有限步预算下有意义；有限步最优噪声谱 $\propto$ 被摧毁信息谱 $\to$ informative source 先验设计的第一条可计算规则。
+\textbf{(2) PRISM 把 SB 差异化钉死在 few-step 区间}：不可见性原理——线性高斯复原模型中，最优预测器与合规细化网格使正噪声参考在无限步恢复同一后验；共享网格及最优解唯一等条件下，最优噪声谱 $\propto$ 后验残差方差谱 $\to$ informative source 的候选规则，动作迁移待验证。
 \vspace{6pt}
 
-\textbf{共性病理（OMP / MVP）}：速度/漂移回归在低模长区\textbf{梯度饥饿}；MeanFlow 恒等式缺边界条件\textbf{解不唯一}。桥匹配收口段同病——one-step SB policy 必须内置方向对齐 + 边界约束。
+\textbf{共性病理（OMP / MVP）}：速度/漂移回归在低模长区\textbf{梯度饥饿}；MeanFlow 恒等式缺边界条件\textbf{解不唯一}。桥匹配是否同病需检查实际目标——one-step SB policy 必须内置方向对齐 + 边界约束。
 \end{frame}
 
 \begin{frame}{空白与机会：五个无人占位的格子}

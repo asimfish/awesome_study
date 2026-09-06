@@ -8,8 +8,8 @@
 
 **构造**：
 - 边界：源 $=$ 上一 chunk 的执行动作（或 BridgePolicy 式的观测潜表示），目标 $=$ 专家动作；参考 $=$ 方差按 $\epsilon$ 缩放的布朗桥（RSBM 的 $\epsilon$-核）。
-- 学习对象：$\bar u(a_t,r,t\mid o)=\frac{1}{t-r}\int_r^t b_\tau\,d\tau$，$b$ 是桥的条件漂移。恒等式 $\bar u=b-(t-r)\frac{d}{dt}\bar u$ 形式不变；桥的条件漂移有闭式，目标可算。
-- 必须内置两个修补：边界约束（$t=r$ 时 $\bar u=b$，即 MVP 的 IVC）与方向对齐（OMP）——桥在收口段漂移模长趋零，正是梯度饥饿最重的区间。
+- 学习对象：$\bar u(a_t,r,t\mid o)=\frac{1}{t-r}\int_r^t b_\tau\,d\tau$，$b$ 是桥的条件漂移。若改学桥对应的确定性概率流，恒等式 $\bar u=b-(t-r)\frac{d}{dt}\bar u$ 形式不变；推广到随机桥漂移需另证，条件桥有闭式不等于边缘目标已知。
+- 必须内置两个修补：边界约束（$t=r$ 时 $\bar u=b$，即 MVP 的 IVC）与方向对齐（OMP）——需按实际桥回归目标的模长检验方向梯度饥饿，桥在收口段漂移不必趋零。
 - 训练可以从零（OFP 式自蒸馏，避开 JVP）。
 
 **最小实验**：RoboMimic（Lift/Can/Square/Transport）+ Adroit，BC 设定。
@@ -23,13 +23,13 @@
 
 ## P2. Few-step SB × Path-space RL 落到操纵
 
-**假设**：path-space 邻近项（GSB-MDPO）或动能正则（FLAC）装进 few-step 桥策略后，在线微调的样本效率与多模态保持优于逐步分解路线（DPPO/DMPO），且在操纵任务上成立——这是 path-space 路线目前完全缺失的证据。
+**假设**：path-space 邻近项（GSB-MDPO）或动能正则（FLAC）装进 few-step 桥策略后，在线微调的样本效率与多模态保持优于逐步分解路线（DPPO/DMPO），且在视觉操纵任务上成立——这是 path-space 路线目前完全缺失的证据。
 
 **构造**：
 - 骨架：P1 的桥策略（或直接用 RSBM/BridgePolicy 的多步版，$K\in\{3,5\}$）。
-- 内核 A（on-policy）：GSB-MDPO 的路径 KL 邻近项，Girsanov 下是新旧漂移的加权 MSE；路径比率用逐步裁剪稳定。
+- 内核 A（on-policy）：GSB-MDPO 的路径 KL 邻近项，共享初始分布与非退化扩散、满足 Girsanov 条件时是新旧漂移的加权 MSE；路径比率用逐步与累积 log-ratio 裁剪稳定。
 - 内核 B（off-policy）：FLAC 的动能预算 + 拉格朗日温度。
-- 对照内核：DPPO 式逐步高斯似然 PPO；FMQ 式一步信赖域（$K=1$ 时的退化形式）。
+- 对照内核：DPPO 式逐步高斯似然 PPO；FMQ 式平均速度信赖域（$K=1$ 时的对照）。
 
 **最小实验**：RoboMimic 微调（DMPO 的设定，Can/Square/Transport）+ 一个视觉任务（像素 RoboMimic 或 LIBERO 子集）。
 - 指标：微调后成功率、样本效率曲线、微调前后动作熵变化（RL 塌模式是已知现象，这是 SB 卖点的试金石）、控制频率。
@@ -37,11 +37,11 @@
 
 **杀死条件**：若 $K\le3$ 时 path-space 内核与逐步分解在所有指标上无差——说明短链下两条路线合流（FMQ 的暗示），path-space 的独立价值仅剩多步长链场景。
 
-**零件**：[GSB-MDPO](../papers/2603.21621_gsb_mdpo/README.md) · [FLAC](../papers/2602.12829_flac/README.md) · [DMPO](../papers/2601.20701_dmpo/README.md) · [DPPO](../papers/2409.00588_dppo/README.md) · [FMQ](../papers/2605.12416_fmq/README.md) · [Soft-SB](../papers/2403.01717_soft_sb/README.md)（几何混合定理给出最优终端分布的精确形式，可作为分析工具）。**窗口 12 个月**。
+**零件**：[GSB-MDPO](../papers/2603.21621_gsb_mdpo/README.md) · [FLAC](../papers/2602.12829_flac/README.md) · [DMPO](../papers/2601.20701_dmpo/README.md) · [DPPO](../papers/2409.00588_dppo/README.md) · [FMQ](../papers/2605.12416_fmq/README.md) · [Soft-SB](../papers/2403.01717_soft_sb/README.md)（固定初态下的几何混合定理给出最优终端分布的精确形式，可作为分析工具）。**窗口 12 个月**。
 
 ## P3. Mode Coverage 基准：一步化的多模态代价
 
-**假设**：一步生成策略（MeanFlow 族、蒸馏族）相对多步教师存在系统性的模式丢失，且丢失量随任务多模态程度增加；SB 的 $\epsilon$ 是唯一能连续控制这个代价的旋钮。目前没有任何一篇一步策略论文测过这件事。
+**假设**：一步生成策略（MeanFlow 族、蒸馏族）相对多步教师存在系统性的模式丢失，且丢失量随任务多模态程度增加；SB 的 $\epsilon$ 是唯一能连续控制这个代价的旋钮。目前仍缺少一步策略的系统性模式覆盖对照。
 
 **构造**：
 - 评测套件：三类任务——合成多峰（可控峰数 2/4/8，如 LP-DS 的四峰玩具）、PushT/Block Pushing（Diffusion Policy 原文的多模态展示）、RoboMimic 多示范风格子集。
@@ -52,15 +52,15 @@
 
 **杀死条件**：若所有一步方法的模式覆盖与教师无差——「一步化有多模态代价」的前提不成立，P1 的卖点随之减半。
 
-**零件**：[LP-DS](../papers/2606.01151_lp_ds/README.md)（熵估计先例）· [Diffusion Policy](../papers/2303.04137_diffusion_policy/README.md)（PushT 多模态设定）· [Consistency Policy](../papers/2405.07503_consistency_policy/README.md) · [Rectified Flow](../papers/2209.03003_rectified_flow/README.md)（矫正定理：直化产生确定性耦合，多样性全靠起点噪声——理论上预示模式丢失）。**先做先赢**。
+**零件**：[LP-DS](../papers/2606.01151_lp_ds/README.md)（熵估计先例）· [Diffusion Policy](../papers/2303.04137_diffusion_policy/README.md)（PushT 多模态设定）· [Consistency Policy](../papers/2405.07503_consistency_policy/README.md) · [Rectified Flow](../papers/2209.03003_rectified_flow/README.md)（矫正定理：直化产生确定性耦合，多样性来自起点噪声——确定性耦合仍可保留多模态，模式损失须实测）。**先做先赢**。
 
 ## P4. 像素级 Sim-to-real Schrödinger Bridge
 
 **假设**：SB 做 unpaired 的 sim→real 视觉翻译，比 CycleGAN 类方法更原则、比 domain randomization 更数据高效，且翻译后训练的策略在真机成功率上提升可测。BDGxRL 停在低维状态，该线自 2026-02 起零新对手。
 
 **构造**：
-- 翻译器：SB Flow（α-IMF，单网络在线迭代）在 sim 渲染图 ↔ 真机图像上训练，参考过程可按 PRISM 的规则设计（噪声集中在 sim-real 差异大的频段）。
-- 训练回路：BDGxRL 的结构——源域（sim）在线交互，观测经 SB 翻译成 real 风格后训练策略；奖励来自 sim。
+- 翻译器：SB Flow（α-IMF，可共享单网络的双向在线迭代）在 sim 渲染图 ↔ 真机图像上训练，参考过程可借 PRISM 的按模态比较思路设计（噪声集中在 sim-real 差异大的频段，作为待验选择）。
+- 训练回路：BDGxRL 的结构向视觉扩展——源域（sim）在线交互，转移经 SB 翻译后训练策略；奖励由源域数据训练的模型在翻译结果上重估。
 - 升级项：策略感知的桥（IMF 的 reciprocal 步按当前策略的访问分布加权），让翻译误差不随策略漂移失控。
 
 **最小实验**：一个可 sim-to-real 的操纵任务（如 pick-place，Franka），sim 用 Isaac/MuJoCo 渲染，real 收几百张无标注图。
@@ -78,10 +78,10 @@
 **构造**：
 - 基础循环：SB Flow 的 α-IMF（小步幅在线自更新）。
 - 改动一处：reciprocal 步的端点对 $(a_0,a_1)$ 采样权重 $\propto\exp(A(s,a_1)/\lambda)$（AWR 的权重进耦合而非 loss）。
-- 收敛分析可借 SB Flow 的框架：驻点从 SB 变为「advantage 重加权后的 SB」，与 Soft-SB 的几何混合定理对接。
+- 收敛分析可借 SB Flow 的框架：加权改变边际后须重证「advantage 重加权后的 SB」驻点，再与 Soft-SB 固定初态下的几何混合定理对接。
 
 **最小实验**：D4RL/OGBench offline 设定 + offline-to-online。
-- 对表：FQL、MVP、FMQ（一步族 offline RL 的现役 SOTA）、Diffusion-QL。
+- 对表：FQL、MVP、FMQ（一步族 offline / offline-to-online RL 的现役 SOTA）、Diffusion-QL。
 - 指标：成功率/回报、训练墙钟、多模态保持。
 
 **杀死条件**：若加权耦合与「AWR 权重进 loss」在性能上无差——耦合层注入没有独立价值，只是换了个位置写同一件事。
@@ -90,7 +90,7 @@
 
 ## 附：一篇可以先写的短文
 
-**「三个信赖域是同一个」**：GSB-MDPO（路径 KL）、LP-DS（latent 偏移 L2）、FMQ（平均速度场 L2）都在解「对参考的距离约束下最大化 Q」，路径 KL 经 Girsanov 就是速度场 L2，FMQ 恰是 GSB-MDPO 邻近项的一步极限。写清三者的等价条件与各自失效点（长链 vs 一步、冻结 vs 微调解码器），配一组统一实验，是一篇不需要新方法的有分量的分析文。零件：[GSB-MDPO](../papers/2603.21621_gsb_mdpo/README.md) · [LP-DS](../papers/2606.01151_lp_ds/README.md) · [FMQ](../papers/2605.12416_fmq/README.md) · [MDPO](../papers/2005.09814_mdpo/README.md)。
+**「三个信赖域是同一个」**：GSB-MDPO（路径 KL）、LP-DS（latent 偏移 L2）、FMQ（平均速度场 L2）都在解「对参考的距离约束下最大化 Q」，路径 KL 在共享先验与非退化扩散等条件下经 Girsanov 化为漂移差的加权 L2，FMQ 与 GSB-MDPO 邻近项的一步极限是否对应仍需核对。写清三者的等价条件与各自失效点（长链 vs 一步、冻结 vs 微调解码器），配一组统一实验，是一篇不需要新方法的有分量的分析文。零件：[GSB-MDPO](../papers/2603.21621_gsb_mdpo/README.md) · [LP-DS](../papers/2606.01151_lp_ds/README.md) · [FMQ](../papers/2605.12416_fmq/README.md) · [MDPO](../papers/2005.09814_mdpo/README.md)。
 
 ## 风险总表
 
@@ -98,6 +98,6 @@
 |---|---|---|
 | UCA-Flow 式架构把一步质量推到与多步无差 | P1、P3 | 一步 vs 多步成功率差 <2 pp 且多模态无差 |
 | MeanFlow 族任何一家发 bridge 版 | P1 | 关注 BridgePolicy 组与 MP1/DMPO 组 |
-| path-space 两组（FLAC/GSB-MDPO）自己补操纵实验 | P2 | 他们的 v2/v3 |
+| path-space 两组（FLAC/GSB-MDPO）自己补视觉操纵实验 | P2 | 他们的 v2/v3 |
 | 评审不区分 diffusion bridge 与 SB | 全部 | 必须用 $\epsilon$ 谱系实验证明差异，不能只讲理论 |
 | 一步化让 $\epsilon$ 旋钮无用 | P1、P3 | $\epsilon$ 扫描曲线平坦 |
